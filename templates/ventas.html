@@ -81,17 +81,22 @@ body {
     box-shadow: 0 0 25px rgba(0,255,200,0.2);
 }
 
-/* IMAGEN */
+/* IMAGEN CORREGIDA */
 .img-box {
     background:#020617;
     border-radius:15px;
     padding:10px;
     text-align:center;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
 .img-box img {
     width:100%;
-    height:120px;
+    height:100%;
     object-fit:contain;
 }
 
@@ -197,7 +202,6 @@ body {
     <div id="alertaVenta" class="alert">
         {{ messages[0] }}
     </div>
-
     <!-- 🔊 SONIDO -->
     <audio id="sonidoVenta" src="{{ url_for('static', filename='sounds/venta.mp3') }}"></audio>
   {% endif %}
@@ -238,24 +242,28 @@ body {
 <div class="card-producto" data-nombre="{{ p[1]|lower }}">
 
     <div class="img-box">
+        <!-- CORREGIDO: p[7] es la imagen -->
         {% if p[7] %}
             <img src="{{ url_for('static', filename='uploads/' ~ p[7]) }}">
         {% else %}
-            <p>Sin imagen</p>
+            <p style="color:#555;">Sin imagen</p>
         {% endif %}
     </div>
 
     <h3>{{ p[1] }}</h3>
 
+    <!-- CORREGIDO: p[4] es precio venta -->
     <p class="precio">
         ${{ "{:,.0f}".format(p[4]).replace(',', '.') }}
     </p>
+    
+    <p style="font-size: 0.8rem; color: #94a3b8;">Stock disponible: {{ p[6] }}</p>
 
     <form action="{{ url_for('venta', id=p[0]) }}" method="POST">
 
         <div class="control">
             <button type="button" onclick="cambiarCantidad(this,-1)">−</button>
-            <input type="number" name="cantidad" value="1" min="1">
+            <input type="number" name="cantidad" value="1" min="1" max="{{ p[6] }}">
             <button type="button" onclick="cambiarCantidad(this,1)">+</button>
         </div>
 
@@ -272,14 +280,9 @@ body {
 // 🔥 EFECTO PRO
 window.addEventListener("load", function() {
     let alerta = document.getElementById("alertaVenta");
-
     if (alerta) {
-
-        // 🔊 sonido
         let audio = document.getElementById("sonidoVenta");
         if (audio) audio.play();
-
-        // 📳 vibración
         if (navigator.vibrate) {
             navigator.vibrate([100, 50, 100]);
         }
@@ -294,7 +297,7 @@ function toggleMenu() {
 document.addEventListener("click", function(e) {
     const menu = document.getElementById("menu");
     const btn = e.target.closest("button");
-    if (!btn && menu) menu.style.display = "none";
+    if (!btn && menu && !e.target.closest("#menu")) menu.style.display = "none";
 });
 
 document.getElementById("buscador").addEventListener("keyup", function() {
@@ -309,10 +312,12 @@ document.getElementById("buscador").addEventListener("keyup", function() {
 
 function cambiarCantidad(btn, cambio) {
     let input = btn.parentElement.querySelector("input");
+    let maxStock = parseInt(input.getAttribute("max")) || 999;
     let valor = parseInt(input.value) || 1;
 
     valor += cambio;
     if (valor < 1) valor = 1;
+    if (valor > maxStock) valor = maxStock;
 
     input.value = valor;
 }
