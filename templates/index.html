@@ -1,78 +1,95 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container" style="padding: 10px;">
 
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-        <h2 style="color: white;">📦 Inventario</h2>
+<div class="container" style="padding: 15px; max-width: 1200px; margin:auto;">
 
-        <div style="position: relative;">
-            <button onclick="toggleMenu()" style="font-size: 20px; background: #1e293b; color: white; border:none; padding:8px 15px; border-radius:8px;">☰</button>
+```
+<!-- 🔝 HEADER -->
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+    <h2 style="color: white; font-size: 1.8rem;">📦 Inventario</h2>
 
-            <div id="menu" style="display:none; position:absolute; right:0; top:50px; background:#1e293b; border-radius:10px; padding:10px; min-width:180px; z-index: 1000;">
-                <a href="/ventas" style="display:block; color:white; padding:12px;">🏠 Inicio</a>
-                <a href="/index" style="display:block; color:white; padding:12px;">📦 Inventario</a>
-                <a href="/dashboard" style="display:block; color:white; padding:12px;">📊 Dashboard</a>
-                <a href="/inversion" style="display:block; color:white; padding:12px;">💸 Inversión</a>
-                <a href="/caja" style="display:block; color:white; padding:12px;">💰 Caja</a>
-                <a href="/historial_caja" style="display:block; color:white; padding:12px;">📊 Historial Caja</a>
-                <a href="{{ url_for('logout') }}" style="display:block; color:#ff6b6b; padding:12px;">🚪 Salir</a>
-            </div>
+    <div style="position: relative;">
+        <button onclick="toggleMenu()" style="font-size: 20px; background: #1e293b; color: white; border:none; padding:10px 16px; border-radius:10px;">☰</button>
+
+        <div id="menu" style="display:none; position:absolute; right:0; top:50px; background:#1e293b; border-radius:10px; padding:10px; min-width:180px; z-index: 1000;">
+            <a href="/ventas" style="display:block; color:white; padding:10px;">🏠 Inicio</a>
+            <a href="/index" style="display:block; color:white; padding:10px;">📦 Inventario</a>
+            <a href="/dashboard" style="display:block; color:white; padding:10px;">📊 Dashboard</a>
+            <a href="/inversion" style="display:block; color:white; padding:10px;">💸 Inversión</a>
+            <a href="/caja" style="display:block; color:white; padding:10px;">💰 Caja</a>
+            <a href="/historial_caja" style="display:block; color:white; padding:10px;">📊 Historial Caja</a>
+            <a href="{{ url_for('logout') }}" style="display:block; color:#ff6b6b; padding:10px;">🚪 Salir</a>
         </div>
     </div>
+</div>
 
-    <div style="margin-bottom: 20px; display:flex; justify-content:center;">
-        <input type="text" id="buscador" placeholder="🔍 Buscar producto..."
-               style="width: 80%; padding:12px; border-radius:12px; border:none; background: #1e293b; color: white;">
-    </div>
+<!-- 🔍 BUSCADOR -->
+<div style="margin-bottom: 25px; display:flex; justify-content:center;">
+    <input type="text" id="buscador" placeholder="🔍 Buscar producto..."
+           style="width: 90%; max-width:500px; padding:12px; border-radius:12px; border:none; background: #1e293b; color: white;">
+</div>
 
-    <div id="gridProductos" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:20px;">
+<!-- 🧩 GRID -->
+<div id="gridProductos" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:20px;">
 
-        {% for p in productos %}
-        <div class="card-producto" data-nombre="{{ p.nombre|lower }}"
-             style="background:#1e293b; border-radius:20px; overflow:hidden; border: 1px solid rgba(255,255,255,0.1);">
+    {% for p in productos %}
+    <div class="card-producto" data-nombre="{{ p[1]|lower }}"
+         style="background:#1e293b; border-radius:18px; overflow:hidden; border: 1px solid rgba(255,255,255,0.08); transition:0.3s;">
 
-            <div style="height:200px; background: #0f172a; display: flex; align-items: center; justify-content: center;">
-                {% if p.imagen %}
-                    <img src="{{ url_for('static', filename='uploads/' + p.imagen) }}"
-                         style="width:100%; height:100%; object-fit: cover;">
-                {% else %}
-                    <div style="color:#475569; text-align: center;">
-                        <span style="font-size: 40px;">📸</span><br>Sin foto
-                    </div>
-                {% endif %}
-            </div>
-
-            <div style="padding:15px; color:white;">
-                <h3 style="margin:0 0 10px 0; font-size: 1.2rem;">{{ p.nombre }}</h3>
-
-                <p style="color:#10b981; font-weight:bold; font-size: 1.1rem; margin: 5px 0;">
-                    Precio: ${{ "{:,.0f}".format(p.precio_venta).replace(',', '.') }}
-                </p>
-
-                <p style="margin: 5px 0; color: #94a3b8;">
-                    Stock disponible:
-                    <strong style="color: {% if p.stock <= 3 %}#ef4444{% else %}#ffffff{% endif %};">
-                        {{ p.stock }}
-                    </strong>
-                </p>
-            </div>
-
-            <div style="padding:10px; display:flex; gap:10px; background: rgba(0,0,0,0.2);">
-                <a href="{{ url_for('editar', id=p.id) }}"
-                   style="flex:1; background:#3b82f6; color:white; text-align:center; padding:10px; border-radius:10px; text-decoration: none; font-weight: bold;">
-                   ✏️ Editar
-                </a>
-
-                <a href="{{ url_for('eliminar', id=p.id) }}" onclick="return confirm('¿Eliminar este producto?')"
-                   style="background:#ef4444; color:white; padding:10px; border-radius:10px; text-decoration: none;">
-                   🗑️
-                </a>
-            </div>
+        <!-- 🖼️ IMAGEN -->
+        <div style="height:200px; background: #0f172a; display: flex; align-items: center; justify-content: center;">
+            {% if p[7] %}
+                <img src="{{ url_for('static', filename='uploads/' ~ p[7]) }}"
+                     style="width:100%; height:100%; object-fit: cover;">
+            {% else %}
+                <div style="color:#475569; text-align: center;">
+                    <span style="font-size: 40px;">📸</span><br>Sin foto
+                </div>
+            {% endif %}
         </div>
-        {% endfor %}
 
+        <!-- 📄 INFO -->
+        <div style="padding:15px; color:white;">
+            <h3 style="margin:0 0 10px 0; font-size: 1.2rem;">{{ p[1] }}</h3>
+
+            <!-- 💰 PRECIO VENTA -->
+            <p style="color:#10b981; font-weight:bold; font-size: 1.1rem; margin: 5px 0;">
+                Venta: ${{ "{:,.0f}".format(p[4]).replace(',', '.') }}
+            </p>
+
+            <!-- 💸 PRECIO COMPRA -->
+            <p style="color:#94a3b8; font-size: 0.95rem; margin: 0;">
+                Compra: ${{ "{:,.0f}".format(p[3]).replace(',', '.') }}
+            </p>
+
+            <!-- 📦 STOCK -->
+            <p style="margin: 8px 0; color: #94a3b8;">
+                Stock:
+                <strong style="color: {% if p[6]|int <= 3 %}#ef4444{% else %}#ffffff{% endif %};">
+                    {{ p[6] }}
+                </strong>
+            </p>
+        </div>
+
+        <!-- ⚙️ BOTONES -->
+        <div style="padding:12px; display:flex; gap:10px; background: rgba(0,0,0,0.2);">
+            <a href="{{ url_for('editar', id=p[0]) }}"
+               style="flex:1; background:#3b82f6; color:white; text-align:center; padding:10px; border-radius:10px; text-decoration: none; font-weight: bold;">
+               ✏️ Editar
+            </a>
+
+            <a href="{{ url_for('eliminar', id=p[0]) }}" onclick="return confirm('¿Eliminar este producto?')"
+               style="background:#ef4444; color:white; padding:10px; border-radius:10px; text-decoration: none;">
+               🗑️
+            </a>
+        </div>
     </div>
+    {% endfor %}
+
+</div>
+```
+
 </div>
 
 <script>
@@ -90,4 +107,5 @@ document.getElementById("buscador").addEventListener("keyup", function() {
     });
 });
 </script>
+
 {% endblock %}
