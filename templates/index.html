@@ -3,23 +3,13 @@
 {% block content %}
 <div class="container" style="padding: 10px;">
 
-    <!-- HEADER -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-        <h2>📦 Inventario</h2>
+        <h2 style="color: white;">📦 Inventario</h2>
 
         <div style="position: relative;">
             <button onclick="toggleMenu()" style="font-size: 20px; background: #1e293b; color: white; border:none; padding:8px 15px; border-radius:8px;">☰</button>
 
-            <div id="menu" style="
-                display:none; 
-                position:absolute; 
-                right:0; 
-                top:50px; 
-                background:#1e293b; 
-                border-radius:10px; 
-                padding:10px; 
-                min-width:180px;
-                z-index: 1000;">
+            <div id="menu" style="display:none; position:absolute; right:0; top:50px; background:#1e293b; border-radius:10px; padding:10px; min-width:180px; z-index: 1000;">
                 <a href="/ventas" style="display:block; color:white; padding:12px;">🏠 Inicio</a>
                 <a href="/index" style="display:block; color:white; padding:12px;">📦 Inventario</a>
                 <a href="/dashboard" style="display:block; color:white; padding:12px;">📊 Dashboard</a>
@@ -31,89 +21,60 @@
         </div>
     </div>
 
-    <!-- TOTAL -->
-    <div style="margin-bottom:15px; background:#111827; color:white; padding:10px; border-radius:8px;">
-        📦 Total productos: <strong>{{ productos|length }}</strong>
-    </div>
-
-    <!-- BUSCADOR -->
     <div style="margin-bottom: 20px; display:flex; justify-content:center;">
         <input type="text" id="buscador" placeholder="🔍 Buscar producto..." 
-               style="width: 60%; max-width:400px; padding:10px; border-radius:10px; border:1px solid #ccc;">
+               style="width: 80%; padding:12px; border-radius:12px; border:none; background: #1e293b; color: white;">
     </div>
 
-    <!-- GRID -->
-    <div id="gridProductos" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px;">
+    <div id="gridProductos" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:20px;">
 
         {% for p in productos %}
         <div class="card-producto" data-nombre="{{ p[1]|lower }}" 
-             style="background:white; border-radius:15px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+             style="background:#1e293b; border-radius:20px; overflow:hidden; border: 1px solid rgba(255,255,255,0.1);">
 
-            <!-- IMAGEN CORREGIDA (Posición 7 ahora es imagen) -->
-            <div style="height:180px; background: #f3f4f6;">
+            <div style="height:200px; background: #0f172a; display: flex; align-items: center; justify-content: center;">
                 {% if p[7] %}
                     <img src="{{ url_for('static', filename='uploads/' ~ p[7]) }}" 
-                         style="width:100%; height:100%; object-fit:cover;">
+                         style="width:100%; height:100%; object-fit: cover;">
                 {% else %}
-                    <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#555; flex-direction: column;">
-                        <span style="font-size: 30px;">🚫</span>
-                        <span>Sin Foto</span>
+                    <div style="color:#475569; text-align: center;">
+                        <span style="font-size: 40px;">📸</span><br>Sin foto
                     </div>
                 {% endif %}
             </div>
 
-            <!-- INFO -->
-            <div style="padding:15px; color:#111;">
-                <h3 style="margin-bottom:8px;">{{ p[1] }}</h3>
+            <div style="padding:15px; color:white;">
+                <h3 style="margin:0 0 10px 0; font-size: 1.2rem;">{{ p[1] }}</h3>
 
-                <p style="color:#555; margin: 5px 0;">
-                    💰 Compra: 
-                    <strong>${{ "{:,.0f}".format(p[3]).replace(',', '.') }}</strong>
-                </p>
-
-                <p style="color:#10b981; font-weight:bold; margin: 5px 0;">
-                    💸 Venta: ${{ "{:,.0f}".format(p[4]).replace(',', '.') }}
+                <p style="color:#10b981; font-weight:bold; font-size: 1.1rem; margin: 5px 0;">
+                    Precio: ${{ "{:,.0f}".format(p[4]).replace(',', '.') }}
                 </p>
                 
-                <!-- PRECIO MAYORISTA (NUEVO) -->
-                <p style="color:#6366f1; font-size: 0.9em; margin: 5px 0;">
-                    🏢 Mayorista: ${{ "{:,.0f}".format(p[5] if p[5] else 0).replace(',', '.') }}
-                </p>
-
-                <p style="margin: 5px 0;">
-                    Stock: 
-                    <strong style="
-                        {% if p[6]|int <= 3 %}color:red;
-                        {% elif p[6]|int <= 10 %}color:orange;
-                        {% else %}color:green;
-                        {% endif %}
-                    ">
+                <p style="margin: 5px 0; color: #94a3b8;">
+                    Stock disponible: 
+                    <strong style="color: {% if p[6]|int <= 3 %}#ef4444{% else %}#ffffff{% endif %};">
                         {{ p[6] }}
                     </strong>
                 </p>
             </div>
 
-            <!-- BOTONES -->
-            <div style="padding:10px; display:flex; gap:5px;">
+            <div style="padding:10px; display:flex; gap:10px; background: rgba(0,0,0,0.2);">
                 <a href="{{ url_for('editar', id=p[0]) }}" 
-                   style="flex:1; background:#3b82f6; color:white; text-align:center; padding:8px; border-radius:6px; text-decoration: none;">
+                   style="flex:1; background:#3b82f6; color:white; text-align:center; padding:10px; border-radius:10px; text-decoration: none; font-weight: bold;">
                    ✏️ Editar
                 </a>
                 
-                <a href="{{ url_for('eliminar', id=p[0]) }}" onclick="return confirm('¿Seguro quieres eliminarlo?')"
-                   style="background:#ef4444; color:white; padding:8px; border-radius:6px; text-decoration: none;">
+                <a href="{{ url_for('eliminar', id=p[0]) }}" onclick="return confirm('¿Eliminar este producto?')"
+                   style="background:#ef4444; color:white; padding:10px; border-radius:10px; text-decoration: none;">
                    🗑️
                 </a>
             </div>
-
         </div>
         {% endfor %}
 
     </div>
-
 </div>
 
-<!-- JS -->
 <script>
 function toggleMenu() {
     const menu = document.getElementById("menu");
@@ -123,14 +84,9 @@ function toggleMenu() {
 document.getElementById("buscador").addEventListener("keyup", function() {
     let filtro = this.value.toLowerCase();
     let productos = document.querySelectorAll(".card-producto");
-
     productos.forEach(p => {
         let nombre = p.getAttribute("data-nombre");
-        if(nombre.includes(filtro)){
-            p.style.display = "block";
-        } else {
-            p.style.display = "none";
-        }
+        p.style.display = nombre.includes(filtro) ? "block" : "none";
     });
 });
 </script>
