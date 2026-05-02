@@ -27,8 +27,8 @@ def conectar():
     DATABASE_URL = os.getenv("DATABASE_URL")
 
     if DATABASE_URL:
-        import psycopg2
-        return psycopg2.connect(DATABASE_URL)
+        import psycopg
+        return psycopg.connect(DATABASE_URL)
     else:
         return sqlite3.connect("database.db", timeout=10)
 
