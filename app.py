@@ -4,7 +4,7 @@ import os
 import time
 from werkzeug.utils import secure_filename
 from datetime import datetime
-import psycopg2
+
 
 app = Flask(__name__)
 app.secret_key = "vapers_store_key_2024"
