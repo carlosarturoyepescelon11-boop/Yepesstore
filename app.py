@@ -4,7 +4,7 @@ import os
 import time
 from werkzeug.utils import secure_filename
 from datetime import datetime
-
+import psycopg2
 
 app = Flask(__name__)
 app.secret_key = "vapers_store_key_2024"
@@ -22,7 +22,15 @@ CLAVE_ADMIN = "1234"
 
 
 def conectar():
-    return sqlite3.connect("database.db", timeout=10)
+    import os
+
+    DATABASE_URL = os.getenv("DATABASE_URL")
+
+    if DATABASE_URL:
+        import psycopg2
+        return psycopg2.connect(DATABASE_URL)
+    else:
+        return sqlite3.connect("database.db", timeout=10)
 
 
 def init_db():
