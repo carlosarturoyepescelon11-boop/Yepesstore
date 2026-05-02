@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, columnas
 import sqlite3
 import os
 import time
@@ -48,7 +48,7 @@ def init_db():
         )
         """)
 
-        columnas = [col[1] for col in con.execute("PRAGMA table_info(productos)")]
+        # elimina completamente esa validación
         if "precio_mayorista" not in columnas:
             con.execute("ALTER TABLE productos ADD COLUMN precio_mayorista REAL")
 
