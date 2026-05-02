@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, columnas
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 import os
 import time
@@ -48,10 +48,6 @@ def init_db():
         )
         """)
 
-        # elimina completamente esa validación
-        if "precio_mayorista" not in columnas:
-            con.execute("ALTER TABLE productos ADD COLUMN precio_mayorista REAL")
-
         con.execute("""
         CREATE TABLE IF NOT EXISTS ventas (
             id SERIAL PRIMARY KEY,
@@ -75,7 +71,6 @@ def init_db():
         """)
 
         con.commit()
-
 
 init_db()
 
