@@ -37,7 +37,7 @@ def init_db():
     with conectar() as con:
         con.execute("""
         CREATE TABLE IF NOT EXISTS productos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             nombre TEXT,
             categoria TEXT,
             precio_compra REAL,
@@ -54,7 +54,7 @@ def init_db():
 
         con.execute("""
         CREATE TABLE IF NOT EXISTS ventas (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             producto_id INTEGER,
             nombre TEXT,
             cantidad INTEGER,
@@ -67,7 +67,7 @@ def init_db():
 
         con.execute("""
         CREATE TABLE IF NOT EXISTS inversiones (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             monto REAL,
             descripcion TEXT,
             fecha TEXT
