@@ -11,14 +11,15 @@
             <button onclick="toggleMenu()" style="font-size: 20px; background: #1e293b; color: white; border:none; padding:8px 15px; border-radius:8px;">☰</button>
 
             <div id="menu" style="
-                display:none;
-                position:absolute;
-                right:0;
-                top:50px;
-                background:#1e293b;
-                border-radius:10px;
-                padding:10px;
-                min-width:180px;">
+                display:none; 
+                position:absolute; 
+                right:0; 
+                top:50px; 
+                background:#1e293b; 
+                border-radius:10px; 
+                padding:10px; 
+                min-width:180px;
+                z-index: 1000;">
                 <a href="/ventas" style="display:block; color:white; padding:12px;">🏠 Inicio</a>
                 <a href="/index" style="display:block; color:white; padding:12px;">📦 Inventario</a>
                 <a href="/dashboard" style="display:block; color:white; padding:12px;">📊 Dashboard</a>
@@ -37,7 +38,7 @@
 
     <!-- BUSCADOR -->
     <div style="margin-bottom: 20px; display:flex; justify-content:center;">
-        <input type="text" id="buscador" placeholder="🔍 Buscar producto..."
+        <input type="text" id="buscador" placeholder="🔍 Buscar producto..." 
                style="width: 60%; max-width:400px; padding:10px; border-radius:10px; border:1px solid #ccc;">
     </div>
 
@@ -45,17 +46,18 @@
     <div id="gridProductos" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px;">
 
         {% for p in productos %}
-        <div class="card-producto" data-nombre="{{ p[1]|lower }}"
+        <div class="card-producto" data-nombre="{{ p[1]|lower }}" 
              style="background:white; border-radius:15px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
 
-            <!-- IMAGEN -->
-            <div style="height:180px;">
+            <!-- IMAGEN CORREGIDA (Posición 7 ahora es imagen) -->
+            <div style="height:180px; background: #f3f4f6;">
                 {% if p[7] %}
-                    <img src="{{ url_for('static', filename='uploads/' ~ p[7]) }}"
+                    <img src="{{ url_for('static', filename='uploads/' ~ p[7]) }}" 
                          style="width:100%; height:100%; object-fit:cover;">
                 {% else %}
-                    <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#555;">
-                        🚫 Sin Foto
+                    <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#555; flex-direction: column;">
+                        <span style="font-size: 30px;">🚫</span>
+                        <span>Sin Foto</span>
                     </div>
                 {% endif %}
             </div>
@@ -64,17 +66,22 @@
             <div style="padding:15px; color:#111;">
                 <h3 style="margin-bottom:8px;">{{ p[1] }}</h3>
 
-                <p style="color:#555;">
-                    💰 Compra:
+                <p style="color:#555; margin: 5px 0;">
+                    💰 Compra: 
                     <strong>${{ "{:,.0f}".format(p[3]).replace(',', '.') }}</strong>
                 </p>
 
-                <p style="color:#10b981; font-weight:bold;">
+                <p style="color:#10b981; font-weight:bold; margin: 5px 0;">
                     💸 Venta: ${{ "{:,.0f}".format(p[4]).replace(',', '.') }}
                 </p>
+                
+                <!-- PRECIO MAYORISTA (NUEVO) -->
+                <p style="color:#6366f1; font-size: 0.9em; margin: 5px 0;">
+                    🏢 Mayorista: ${{ "{:,.0f}".format(p[5] if p[5] else 0).replace(',', '.') }}
+                </p>
 
-                <p>
-                    Stock:
+                <p style="margin: 5px 0;">
+                    Stock: 
                     <strong style="
                         {% if p[6]|int <= 3 %}color:red;
                         {% elif p[6]|int <= 10 %}color:orange;
@@ -88,13 +95,13 @@
 
             <!-- BOTONES -->
             <div style="padding:10px; display:flex; gap:5px;">
-                <a href="{{ url_for('editar', id=p[0]) }}"
-                   style="flex:1; background:#3b82f6; color:white; text-align:center; padding:8px; border-radius:6px;">
+                <a href="{{ url_for('editar', id=p[0]) }}" 
+                   style="flex:1; background:#3b82f6; color:white; text-align:center; padding:8px; border-radius:6px; text-decoration: none;">
                    ✏️ Editar
                 </a>
-
-                <a href="{{ url_for('eliminar', id=p[0]) }}"
-                   style="background:#ef4444; color:white; padding:8px; border-radius:6px;">
+                
+                <a href="{{ url_for('eliminar', id=p[0]) }}" onclick="return confirm('¿Seguro quieres eliminarlo?')"
+                   style="background:#ef4444; color:white; padding:8px; border-radius:6px; text-decoration: none;">
                    🗑️
                 </a>
             </div>
@@ -113,14 +120,12 @@ function toggleMenu() {
     menu.style.display = (menu.style.display === "block") ? "none" : "block";
 }
 
-// 🔥 BUSCADOR EN VIVO
 document.getElementById("buscador").addEventListener("keyup", function() {
     let filtro = this.value.toLowerCase();
     let productos = document.querySelectorAll(".card-producto");
 
     productos.forEach(p => {
         let nombre = p.getAttribute("data-nombre");
-
         if(nombre.includes(filtro)){
             p.style.display = "block";
         } else {
@@ -129,5 +134,4 @@ document.getElementById("buscador").addEventListener("keyup", function() {
     });
 });
 </script>
-
 {% endblock %}
