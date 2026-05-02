@@ -19,11 +19,13 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 USUARIO_ADMIN = "admin"
 CLAVE_ADMIN = "1234"
 
+
 def conectar():
     # Usamos SQLite forzado para evitar el error de PostgreSQL en Render
     con = sqlite3.connect("database.db", timeout=10)
     con.row_factory = sqlite3.Row
     return con
+
 
 def init_db():
     with conectar() as con:
@@ -60,7 +62,7 @@ def init_db():
             fecha TEXT
         )
         """)
-        
+
         # 🔥 PARCHE DE SEGURIDAD: Fuerza la columna si no existe
         try:
             con.execute("ALTER TABLE productos ADD COLUMN precio_mayorista REAL")
@@ -68,10 +70,13 @@ def init_db():
             pass
         con.commit()
 
+
 init_db()
+
 
 def esta_logeado():
     return "usuario" in session
+
 
 # --- RUTAS DE ACCESO ---
 
@@ -86,10 +91,12 @@ def login():
         error = "Usuario o clave incorrectos"
     return render_template("login.html", error=error)
 
+
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
 
 # --- GESTIÓN DE PRODUCTOS ---
 
@@ -97,15 +104,41 @@ def logout():
 def index():
     if not esta_logeado(): return redirect(url_for('login'))
     with conectar() as con:
-        productos = con.execute("SELECT * FROM productos ORDER BY id DESC").fetchall()
+        productos = con.execute("""
+        SELECT 
+            id,
+            nombre,
+            categoria,
+            precio_compra,
+            precio_venta,
+            precio_mayorista,
+            stock,
+            imagen
+        FROM productos
+        ORDER BY id DESC
+        """).fetchall()
     return render_template("index.html", productos=productos)
+
 
 @app.route("/ventas")
 def ventas():
     if not esta_logeado(): return redirect(url_for('login'))
     with conectar() as con:
-        productos = con.execute("SELECT * FROM productos ORDER BY id DESC").fetchall()
+        productos = con.execute("""
+        SELECT 
+            id,
+            nombre,
+            categoria,
+            precio_compra,
+            precio_venta,
+            precio_mayorista,
+            stock,
+            imagen
+        FROM productos
+        ORDER BY id DESC
+        """).fetchall()
     return render_template("ventas.html", productos=productos)
+
 
 @app.route("/agregar", methods=["GET", "POST"])
 def agregar():
@@ -130,7 +163,7 @@ def agregar():
                     INSERT INTO productos (nombre, categoria, precio_compra, precio_venta, precio_mayorista, stock, imagen)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                 """, (nombre, categoria, p_compra, p_venta, p_mayorista, stock, n_img))
-                
+
                 if stock > 0 and p_compra > 0:
                     con.execute("INSERT INTO inversiones (monto, descripcion, fecha) VALUES (?, ?, ?)",
                                 (p_compra * stock, f"Compra inicial {nombre}", datetime.now().strftime("%Y-%m-%d")))
@@ -139,6 +172,7 @@ def agregar():
         except Exception as e:
             return f"Error al agregar: {e}"
     return render_template("agregar.html")
+
 
 @app.route("/editar/<int:id>", methods=["GET", "POST"])
 def editar(id):
@@ -169,6 +203,7 @@ def editar(id):
     con.close()
     return render_template("editar.html", producto=producto)
 
+
 @app.route("/eliminar/<int:id>")
 def eliminar(id):
     if not esta_logeado(): return redirect(url_for('login'))
@@ -176,6 +211,7 @@ def eliminar(id):
         con.execute("DELETE FROM productos WHERE id=?", (id,))
         con.commit()
     return redirect(url_for('index'))
+
 
 # --- VENTAS Y TICKETS ---
 
@@ -185,30 +221,36 @@ def venta(id):
     con = conectar()
     p = con.execute("SELECT * FROM productos WHERE id=?", (id,)).fetchone()
     cantidad = int(request.form.get("cantidad") or 1)
-    
+
     if p and p["stock"] >= cantidad:
         # Lógica mayorista: si es vape y lleva 15+ usa p_mayorista
-        precio_f = p["precio_mayorista"] if (p["categoria"].lower() == "vape" and cantidad >= 15 and p["precio_mayorista"] > 0) else p["precio_venta"]
+        precio_f = p["precio_mayorista"] if (
+                    p["categoria"].lower() == "vape" and cantidad >= 15 and p["precio_mayorista"] > 0) else p[
+            "precio_venta"]
         ganancia = (precio_f - p["precio_compra"]) * cantidad
         fecha = datetime.now().strftime("%Y-%m-%d")
-        
+
         con.execute("UPDATE productos SET stock = stock - ? WHERE id=?", (cantidad, id))
         con.execute("""INSERT INTO ventas (producto_id, nombre, cantidad, precio_compra, precio_venta, ganancia, fecha) 
-                    VALUES (?,?,?,?,?,?,?)""", (id, p["nombre"], cantidad, p["precio_compra"], precio_f, ganancia, fecha))
+                    VALUES (?,?,?,?,?,?,?)""",
+                    (id, p["nombre"], cantidad, p["precio_compra"], precio_f, ganancia, fecha))
         con.commit()
-        
-        session["ticket"] = {"nombre": p["nombre"], "cantidad": cantidad, "total": precio_f * cantidad, "ganancia": ganancia}
+
+        session["ticket"] = {"nombre": p["nombre"], "cantidad": cantidad, "total": precio_f * cantidad,
+                             "ganancia": ganancia}
         flash(f"✅ Vendido: {p['nombre']}")
     else:
         flash("❌ Error en stock")
     con.close()
     return redirect(url_for('ticket'))
 
+
 @app.route("/ticket")
 def ticket():
     if not esta_logeado(): return redirect(url_for('login'))
     t = session.get("ticket")
     return render_template("ticket.html", t=t)
+
 
 # --- CAJA E INVERSIONES ---
 
@@ -220,10 +262,13 @@ def dashboard():
     total_g = con.execute("SELECT SUM(ganancia) FROM ventas").fetchone()[0] or 0
     inv_t = con.execute("SELECT SUM(monto) FROM inversiones").fetchone()[0] or 0
     hoy_g = con.execute("SELECT SUM(ganancia) FROM ventas WHERE fecha=?", (hoy_f,)).fetchone()[0] or 0
-    ventas_hoy = con.execute("SELECT SUM(precio_venta * cantidad) FROM ventas WHERE fecha=?", (hoy_f,)).fetchone()[0] or 0
+    ventas_hoy = con.execute("SELECT SUM(precio_venta * cantidad) FROM ventas WHERE fecha=?", (hoy_f,)).fetchone()[
+                     0] or 0
     ventas_list = con.execute("SELECT * FROM ventas ORDER BY id DESC LIMIT 10").fetchall()
     con.close()
-    return render_template("dashboard.html", total=total_g, inversion=inv_t, hoy=hoy_g, ventas_hoy=ventas_hoy, ventas=ventas_list)
+    return render_template("dashboard.html", total=total_g, inversion=inv_t, hoy=hoy_g, ventas_hoy=ventas_hoy,
+                           ventas=ventas_list)
+
 
 @app.route("/caja")
 def caja():
@@ -234,6 +279,7 @@ def caja():
     inv_total = con.execute("SELECT SUM(monto) FROM inversiones WHERE fecha=?", (hoy,)).fetchone()[0] or 0
     con.close()
     return render_template("caja.html", ventas=v_total, inversion=inv_total, ganancia=v_total - inv_total)
+
 
 @app.route("/inversion", methods=["GET", "POST"])
 def inversion():
@@ -255,10 +301,11 @@ def inversion():
         con.commit()
         con.close()
         return redirect(url_for('dashboard'))
-    
+
     productos = con.execute("SELECT id, nombre FROM productos").fetchall()
     con.close()
     return render_template("inversion.html", productos=productos)
+
 
 @app.route("/historial_caja")
 def historial_caja():
@@ -271,6 +318,7 @@ def historial_caja():
     """).fetchall()
     con.close()
     return render_template("historial_caja.html", historial=datos)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
