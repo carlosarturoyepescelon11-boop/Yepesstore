@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width:600px; margin:auto; padding:20px;">
+
+    <h2 style="text-align:center;">💰 Caja del Día</h2>
+
+    <div style="display:flex; flex-direction:column; gap:15px; margin-top:20px;">
+
+        <div style="background:#022c22; padding:15px; border-radius:10px;">
+            🟢 Ventas: <strong>${{ ventas }}</strong>
+        </div>
+
+        <div style="background:#1e3a8a; padding:15px; border-radius:10px;">
+            🔵 Inversión: <strong>${{ inversion }}</strong>
+        </div>
+
+        <div style="background:#7f1d1d; padding:15px; border-radius:10px;">
+            🔴 Gastos: <strong>${{ gastos }}</strong>
+        </div>
+
+        <div style="background:#111827; padding:20px; border-radius:12px; font-size:20px;">
+            🟡 Ganancia del Día:
+            <strong>${{ ganancia }}</strong>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

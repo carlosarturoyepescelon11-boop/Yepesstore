@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Vapers Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
+
+<div class="form-container" style="margin: 0;">
+    <h2>🔐 Iniciar Sesión</h2>
+
+    {% if error %}
+        <p style="color: #ff4d4d; background: #3a1616; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.9rem; margin-bottom: 20px;">
+            ⚠️ {{ error }}
+        </p>
+    {% endif %}
+
+    <form method="POST" class="styled-form">
+        <div class="form-group">
+            <label>Usuario</label>
+            <input name="usuario" type="text" placeholder="Tu usuario" required autofocus>
+        </div>
+
+        <div class="form-group">
+            <label>Contraseña</label>
+            <input name="clave" type="password" placeholder="••••••••" required>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-save">Entrar al Sistema</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

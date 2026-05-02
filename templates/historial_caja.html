@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div style="padding:20px; max-width:700px; margin:auto;">
+
+    <h2 style="color:white; text-align:center; margin-bottom:20px;">
+        📊 Historial de Caja
+    </h2>
+
+    <!-- 🔥 LISTA -->
+    <div style="display:flex; flex-direction:column; gap:15px;">
+
+        {% for d in historial %}
+        <div style="
+            background: linear-gradient(145deg, #0f172a, #020617);
+            border-radius:16px;
+            padding:18px;
+            box-shadow:0 0 15px rgba(0,255,200,0.1);
+            border:1px solid rgba(255,255,255,0.05);
+        ">
+
+            <!-- FECHA -->
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <strong style="color:#00ffcc;">
+                    {{ d.fecha }}
+                </strong>
+
+                <span style="
+                    font-size:12px;
+                    color:#94a3b8;
+                    background:#020617;
+                    padding:4px 10px;
+                    border-radius:8px;
+                ">
+                    Día cerrado automático
+                </span>
+            </div>
+
+            <!-- DATOS -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+
+                <div style="
+                    background:#022c22;
+                    padding:10px;
+                    border-radius:10px;
+                    text-align:center;
+                ">
+                    <small>Ventas</small><br>
+                    <strong>${{ "{:,.0f}".format(d.ventas).replace(',', '.') }}</strong>
+                </div>
+
+                <div style="
+                    background:#1e3a8a;
+                    padding:10px;
+                    border-radius:10px;
+                    text-align:center;
+                ">
+                    <small>Inversión</small><br>
+                    <strong>${{ "{:,.0f}".format(d.inversion).replace(',', '.') }}</strong>
+                </div>
+
+            </div>
+
+            <!-- GANANCIA -->
+            <div style="
+                margin-top:10px;
+                background:#111827;
+                padding:12px;
+                border-radius:12px;
+                text-align:center;
+                font-size:16px;
+            ">
+                🟡 Ganancia:
+                <strong style="
+                    color: {{ '#22c55e' if d.ganancia >= 0 else '#ef4444' }};
+                ">
+                    ${{ "{:,.0f}".format(d.ganancia).replace(',', '.') }}
+                </strong>
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

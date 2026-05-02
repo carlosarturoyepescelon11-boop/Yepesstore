@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2>➕ Agregar Nuevo Producto</h2>
+
+    <form id="uploadForm" action="{{ url_for('agregar') }}" method="POST" enctype="multipart/form-data" class="styled-form" autocomplete="off">
+
+        <div class="form-group">
+            <label>Nombre del Producto:</label>
+            <input type="text" name="nombre" placeholder="Ej: Vaper Smok Nord 4" required>
+        </div>
+
+        <!-- 🔥 CATEGORÍA PRO -->
+        <div class="form-group">
+            <label>Categoría:</label>
+
+            <div style="position:relative;">
+                <select name="categoria" required class="select-pro">
+                    <option value="">Seleccionar categoría</option>
+                    <option value="Vape">🔥 Vape</option>
+                    <option value="Accesorio">🧩 Accesorio</option>
+                </select>
+
+                <span class="arrow">▼</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Precio Compra ($):</label>
+                <input type="number" step="0.01" name="precio_compra" placeholder="0.00" required>
+            </div>
+            <div class="form-group">
+                <label>Precio Venta ($):</label>
+                <input type="number" step="0.01" name="precio_venta" placeholder="0.00" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Cantidad en Stock:</label>
+            <input type="number" name="stock" placeholder="Cantidad disponible" required>
+        </div>
+
+        <!-- 📸 IMAGEN -->
+        <div class="form-group">
+            <label class="file-label">📸 Foto del Producto:</label>
+            <input type="file" id="fileInput" name="imagen" accept="image/*" class="file-input">
+
+            <div style="margin-top:10px;">
+                <img id="previewImg"
+                     src=""
+                     style="display:none; width:150px; border-radius:10px; border:1px solid #334155;">
+            </div>
+
+            <small>Formatos aceptados: JPG, PNG, GIF</small>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" id="submitBtn" class="btn-save">💾 Guardar Producto</button>
+            <a href="/index" class="btn-cancel">Cancelar</a>
+        </div>
+
+    </form>
+</div>
+
+<style>
+/* 🔥 SELECT PRO */
+.select-pro{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    background:#020617;
+    color:white;
+    border:1px solid #1f2937;
+    appearance:none;
+    outline:none;
+    font-size:14px;
+    transition:0.3s;
+}
+
+.select-pro:focus{
+    border-color:#00ffcc;
+    box-shadow:0 0 10px rgba(0,255,200,0.3);
+}
+
+/* FLECHA */
+.arrow{
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#00ffcc;
+    pointer-events:none;
+}
+
+/* OPCIONES (mejor visibilidad) */
+select option{
+    background:#020617;
+    color:white;
+}
+</style>
+
+<script>
+// PREVIEW
+document.getElementById("fileInput").addEventListener("change", function(event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById("previewImg");
+
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+    } else {
+        preview.style.display = "none";
+    }
+});
+
+// BOTÓN
+document.getElementById('uploadForm').onsubmit = function() {
+    var btn = document.getElementById('submitBtn');
+    btn.innerHTML = "Subiendo...";
+    btn.style.opacity = "0.7";
+    btn.style.pointerEvents = "none";
+};
+</script>
+
+{% endblock %}

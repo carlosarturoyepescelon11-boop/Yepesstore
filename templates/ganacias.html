@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 style="text-align:center;">💰 Ganancias Totales</h2>
+
+<h1 style="text-align:center; color:#22c55e;">
+    ${{ total if total else 0 }}
+</h1>
+
+<hr>
+
+<h3>🧾 Historial de Ventas</h3>
+
+{% for v in ventas %}
+<div class="card">
+
+    <h3>{{v[2]}}</h3>
+
+    <p>📦 Cantidad: {{v[3]}}</p>
+
+    <p>💸 Venta: ${{v[5]}}</p>
+    <p>🛒 Compra: ${{v[4]}}</p>
+
+    <p style="color:#22c55e; font-weight:bold;">
+        Ganancia: ${{v[6]}}
+    </p>
+
+</div>
+{% endfor %}
+
+{% endblock %}

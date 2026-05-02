@@ -1,0 +1,300 @@
+/* CONFIGURACIÓN GENERAL */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: #0f3460; /* Azul muy oscuro */
+    color: #ffffff;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* NAVEGACIÓN */
+.navbar {
+    background-color: #1a1a2e;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #e94560;
+    text-decoration: none;
+}
+
+.menu a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.menu a:hover {
+    color: #e94560;
+}
+
+/* HEADER DEL INDEX */
+.header-index {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    margin-top: 20px;
+}
+
+.btn-main {
+    background-color: #e94560;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-main:hover {
+    background-color: #ff2e63;
+    transform: scale(1.05);
+}
+
+/* GRID DE TARJETAS (CARDS) */
+.grid-productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.card {
+    background: #16213e;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: 0.3s;
+    border: 1px solid #1a1a2e;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+    border-color: #e94560;
+}
+
+.card-img {
+    position: relative;
+    height: 220px;
+    background-color: #0c1427;
+}
+
+.card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(233, 69, 96, 0.9);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+/* CUERPO DE LA CARD */
+.card-body {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.card-body h3 {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    color: #fff;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price {
+    color: #4dfd63; /* Verde neón */
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+.stock {
+    font-size: 0.85rem;
+    color: #a2a2a2;
+}
+
+/* FOOTER DE LA CARD */
+.card-footer {
+    display: flex;
+    padding: 12px;
+    gap: 8px;
+    background: #1a1a2e;
+}
+
+.btn-edit-card, .btn-delete-card {
+    padding: 8px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    text-align: center;
+    transition: 0.2s;
+}
+
+.btn-edit-card {
+    flex: 2;
+    background: #0f3460;
+    color: white;
+}
+
+.btn-delete-card {
+    flex: 1;
+    background: #3a1616;
+    color: #ff4d4d;
+}
+
+.btn-edit-card:hover { background: #164a8a; }
+.btn-delete-card:hover { background: #5a1e1e; }
+
+/* FORMULARIOS (Agregar / Editar) */
+.form-container {
+    max-width: 550px;
+    margin: 40px auto;
+    background: #16213e;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+.form-container h2 {
+    margin-bottom: 25px;
+    text-align: center;
+    color: #e94560;
+}
+
+.styled-form .form-group {
+    margin-bottom: 18px;
+}
+
+.styled-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #a2a2a2;
+}
+
+.styled-form input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #1a1a2e;
+    background: #0f3460;
+    color: white;
+    outline: none;
+    transition: 0.3s;
+}
+
+.styled-form input:focus {
+    border-color: #e94560;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.form-actions {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-save {
+    background: #4dfd63;
+    color: #0f3460;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-save:hover {
+    background: #3ce052;
+    transform: translateY(-2px);
+}
+
+.btn-cancel {
+    text-align: center;
+    color: #a2a2a2;
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 5px;
+}
+
+.btn-cancel:hover {
+    color: #fff;
+}
+
+/* Estilo para el input de archivo */
+.file-input {
+    padding: 8px !important;
+    background: transparent !important;
+    border: 1px dashed #333 !important;
+}
+
+small {
+    color: #666;
+    display: block;
+    margin-top: 5px;
+}
+
+.menu-item {
+    display: block;
+    padding: 10px;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.menu-item:hover {
+    background: #334155;
+}

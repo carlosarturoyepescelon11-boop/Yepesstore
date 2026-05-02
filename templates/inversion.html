@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div style="display:flex; justify-content:center; margin-top:40px;">
+
+<div style="
+    width:100%;
+    max-width:420px;
+    background: linear-gradient(145deg, #0f172a, #020617);
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 0 25px rgba(0,255,200,0.15);
+    color:white;
+">
+
+    <h2 style="text-align:center; margin-bottom:20px;">
+        💸 Inversión
+    </h2>
+
+    <form method="POST">
+
+        <!-- TIPO -->
+        <select name="tipo" onchange="cambiarTipo()" id="tipo" style="
+            width:100%;
+            padding:10px;
+            border-radius:10px;
+            background:#020617;
+            color:white;
+            border:1px solid #1f2937;
+            margin-bottom:15px;
+        ">
+            <option value="producto">📦 Comprar producto</option>
+            <option value="gasto">💸 Registrar gasto</option>
+        </select>
+
+        <!-- PRODUCTO -->
+        <div id="boxProducto">
+
+            <label>Producto</label>
+            <select name="producto_id" style="
+                width:100%;
+                padding:10px;
+                border-radius:10px;
+                background:#020617;
+                color:white;
+                border:1px solid #1f2937;
+                margin-bottom:10px;
+            ">
+                {% for p in productos %}
+                <option value="{{ p[0] }}">{{ p[1] }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Cantidad</label>
+            <input type="number" name="cantidad" value="1" min="1"
+                style="
+                width:100%;
+                padding:10px;
+                border-radius:10px;
+                background:#020617;
+                color:white;
+                border:1px solid #1f2937;
+                margin-bottom:10px;
+            ">
+
+        </div>
+
+        <!-- GASTO -->
+        <div id="boxGasto" style="display:none;">
+
+            <label>Descripción</label>
+            <input type="text" name="descripcion"
+                placeholder="Ej: Arriendo, transporte..."
+                style="
+                width:100%;
+                padding:10px;
+                border-radius:10px;
+                background:#020617;
+                color:white;
+                border:1px solid #1f2937;
+                margin-bottom:10px;
+            ">
+        </div>
+
+        <!-- MONTO -->
+        <label>Monto</label>
+        <input type="number" name="monto" required
+            placeholder="Ej: 50000"
+            style="
+            width:100%;
+            padding:10px;
+            border-radius:10px;
+            background:#020617;
+            color:white;
+            border:1px solid #1f2937;
+            margin-bottom:15px;
+        ">
+
+        <!-- BOTÓN -->
+        <button type="submit" style="
+            width:100%;
+            padding:12px;
+            border:none;
+            border-radius:12px;
+            background:linear-gradient(90deg,#22c55e,#06b6d4);
+            color:white;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.3s;
+        "
+        onmouseover="this.style.transform='scale(1.05)'"
+        onmouseout="this.style.transform='scale(1)'"
+        >
+            💾 Guardar Inversión
+        </button>
+
+    </form>
+
+</div>
+
+</div>
+
+<script>
+function cambiarTipo(){
+    let tipo = document.getElementById("tipo").value;
+
+    document.getElementById("boxProducto").style.display =
+        tipo === "producto" ? "block" : "none";
+
+    document.getElementById("boxGasto").style.display =
+        tipo === "gasto" ? "block" : "none";
+}
+</script>
+
+{% endblock %}

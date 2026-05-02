@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="padding: 15px; font-family: sans-serif; max-width: 800px; margin: auto;">
+    <h2 style="text-align: center;">📊 Dashboard de Ventas</h2>
+
+    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+
+        <!-- 💰 GANANCIA TOTAL -->
+        <div style="flex: 1; background: #e3f2fd; padding: 20px; border-radius: 12px; text-align: center;">
+            <h4>💰 Ganancia Total</h4>
+            <p style="font-size: 1.4rem; font-weight: bold;">
+                ${{ "{:,.0f}".format(total or 0).replace(',', '.') }}
+            </p>
+        </div>
+
+        <!-- 📅 GANANCIA HOY -->
+        <div style="flex: 1; background: #e8f5e9; padding: 20px; border-radius: 12px; text-align: center;">
+            <h4>📅 Ganancia Hoy</h4>
+            <p style="font-size: 1.4rem; font-weight: bold;">
+                ${{ "{:,.0f}".format(hoy or 0).replace(',', '.') }}
+            </p>
+        </div>
+
+        <!-- 💵 VENTAS HOY -->
+        <div style="flex: 1; background:#fff3e0; padding:20px; border-radius:12px; text-align:center;">
+            <h4>💵 Ventas Hoy</h4>
+            <p style="font-size: 1.4rem; font-weight: bold;">
+                ${{ "{:,.0f}".format(ventas_hoy or 0).replace(',', '.') }}
+            </p>
+        </div>
+
+        <!-- 💸 INVERSIÓN -->
+        <div style="flex: 1; background:#0f172a; padding:15px; color:white; border-radius:10px;">
+            <h4>💸 Inversión Total</h4>
+            <p style="font-size: 1.2rem;">
+                ${{ "{:,.0f}".format(inversion or 0).replace(',', '.') }}
+            </p>
+        </div>
+
+    </div>
+
+    <!-- GRAFICA -->
+    <div style="background: white; padding: 15px; border-radius: 12px; margin-bottom: 30px;">
+        <canvas id="miGrafica"></canvas>
+    </div>
+
+    <!-- MOVIMIENTOS -->
+    <h3>🧾 Últimos Movimientos</h3>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        {% for v in ventas %}
+        <div style="background: white; padding: 12px; border-radius: 8px; border-left: 6px solid #4caf50; display: flex; justify-content: space-between;">
+            <div>
+                <strong style="color:#111;">{{ v[2] }}</strong>
+                <small style="color:#777;">{{ v[7] }}</small>
+            </div>
+            <div style="text-align:right;">
+                <span style="color:#2e7d32; font-weight:bold;">
+                    +${{ "{:,.0f}".format(v[6] or 0).replace(',', '.') }}
+                </span>
+                <br>
+                <small style="color:#999;">Cant: {{ v[3] }}</small>
+            </div>
+        </div>
+        {% else %}
+        <p style="text-align: center; color: #999;">Aún no hay ventas.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- CHART -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(function() {
+    const ctx = document.getElementById('miGrafica');
+    if (!ctx) return;
+
+    const etiquetas = {{ (fechas or []) | tojson }};
+    const valores = {{ (ganancias or []) | tojson }};
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: etiquetas,
+            datasets: [{
+                label: 'Ganancia Diaria ($)',
+                data: valores,
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+})();
+</script>
+
+{% endblock %}

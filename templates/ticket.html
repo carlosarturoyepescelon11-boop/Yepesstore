@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div style="padding:20px; color:white; text-align:center;">
+
+<h2>🧾 Venta realizada</h2>
+
+{% if t %}
+<div style="background:#020617; padding:20px; border-radius:12px; margin-top:20px;">
+
+<p><strong>Producto:</strong> {{ t.nombre }}</p>
+<p><strong>Cantidad:</strong> {{ t.cantidad }}</p>
+<p><strong>Total:</strong> ${{ "{:,.0f}".format(t.total) }}</p>
+<p><strong>Ganancia:</strong> ${{ "{:,.0f}".format(t.ganancia) }}</p>
+
+</div>
+{% endif %}
+
+<br>
+
+<a href="/ventas" style="background:#22c55e; padding:10px 20px; border-radius:10px; color:black;">
+⬅ Volver a ventas
+</a>
+
+</div>
+
+{% endblock %}
