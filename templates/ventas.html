@@ -1,81 +1,254 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <div class="container" style="padding: 20px; position:relative;">
 
 <style>
-/* (TODO TU CSS LO DEJAMOS IGUAL) */
+body{
+    background: linear-gradient(135deg,#020617,#0f172a);
+}
+
+/* HEADER */
+.header-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.header-right{
+    display:flex;
+    gap:10px;
+}
+
+.btn-add{
+    background:#22c55e;
+    color:black;
+    padding:10px 15px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+/* MENU */
+.menu{
+    display:none;
+    position:absolute;
+    right:20px;
+    top:60px;
+    background:#020617;
+    border-radius:12px;
+    padding:10px;
+    min-width:180px;
+    z-index:1000;
+}
+
+.menu a{
+    display:block;
+    color:white;
+    padding:10px;
+    text-decoration:none;
+}
+
+/* BUSCADOR */
+.buscador{
+    margin-bottom:20px;
+}
+
+.buscador input{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:none;
+    background:#1e293b;
+    color:white;
+}
+
+/* GRID */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:20px;
+}
+
+/* CARD */
+.card-producto{
+    background:#1e293b;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 4px 15px rgba(0,0,0,0.3);
+    transition:0.3s;
+}
+
+.card-producto:hover{
+    transform: translateY(-5px);
+}
+
+/* IMAGEN */
+.img-box{
+    height:200px;
+    background:#0f172a;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.img-box img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* INFO */
+.info{
+    padding:15px;
+    color:white;
+}
+
+.info h3{
+    margin:0 0 10px 0;
+}
+
+.precio{
+    color:#22c55e;
+    font-weight:bold;
+    font-size:1.1rem;
+}
+
+/* CONTROLES */
+.control{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:10px;
+}
+
+.control button{
+    background:#111827;
+    color:white;
+    border:none;
+    padding:10px;
+    border-radius:8px;
+}
+
+.control input{
+    width:60px;
+    text-align:center;
+    border-radius:8px;
+    border:none;
+}
+
+/* BOTON */
+.btn{
+    background:#06b6d4;
+    color:white;
+    border:none;
+    padding:12px;
+    border-radius:10px;
+    font-weight:bold;
+    width:100%;
+}
+
+/* ALERTA */
+.alert{
+    background:#22c55e;
+    color:black;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:15px;
+    text-align:center;
+}
 </style>
 
+<!-- ALERTA -->
+
 {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <div id="alertaVenta" class="alert">
-        {{ messages[0] }}
-    </div>
-    <audio id="sonidoVenta" src="{{ url_for('static', filename='sounds/venta.mp3') }}"></audio>
-  {% endif %}
+{% if messages %} <div id="alertaVenta" class="alert">
+{{ messages[0] }} </div> <audio id="sonidoVenta" src="{{ url_for('static', filename='sounds/venta.mp3') }}"></audio>
+{% endif %}
 {% endwith %}
+
+<!-- HEADER -->
 
 <div class="header-top">
     <h2 style="color:white;">🚀 Inicio</h2>
 
-    <div class="header-right">
-        <a href="{{ url_for('agregar') }}" class="btn-add">➕ Agregar</a>
+```
+<div class="header-right">
+    <a href="{{ url_for('agregar') }}" class="btn-add">➕ Agregar</a>
 
-        <button onclick="toggleMenu()" style="background:#111827; color:white; border:none; padding:8px 15px; border-radius:8px;">
-            ☰
-        </button>
-    </div>
-
-    <div id="menu" class="menu">
-        <a href="/ventas">🏠 Inicio</a>
-        <a href="/index">📦 Inventario</a>
-        <a href="/dashboard">📊 Dashboard</a>
-        <a href="/inversion">💸 Inversión</a>
-        <a href="/caja">💰 Caja</a>
-        <a href="/historial_caja">📊 Historial Caja</a>
-        <a href="{{ url_for('logout') }}" style="color:#ff6b6b;">🚪 Salir</a>
-    </div>
+    <button onclick="toggleMenu()" style="background:#111827; color:white; border:none; padding:10px; border-radius:8px;">
+        ☰
+    </button>
 </div>
+
+<div id="menu" class="menu">
+    <a href="/ventas">🏠 Inicio</a>
+    <a href="/index">📦 Inventario</a>
+    <a href="/dashboard">📊 Dashboard</a>
+    <a href="/inversion">💸 Inversión</a>
+    <a href="/caja">💰 Caja</a>
+    <a href="/historial_caja">📊 Historial Caja</a>
+    <a href="{{ url_for('logout') }}" style="color:#ff6b6b;">🚪 Salir</a>
+</div>
+```
+
+</div>
+
+<!-- BUSCADOR -->
 
 <div class="buscador">
-    <input type="text" id="buscador" placeholder="Buscar producto...">
+    <input type="text" id="buscador" placeholder="🔍 Buscar producto...">
 </div>
+
+<!-- PRODUCTOS -->
 
 <div class="grid">
 
 {% for p in productos %}
+
 <div class="card-producto" data-nombre="{{ p.nombre|lower }}">
 
-    <div class="img-box">
-        {% if p.imagen %}
-            <img src="{{ url_for('static', filename='uploads/' + p.imagen) }}">
-        {% else %}
-            <p style="color:#555;">Sin imagen</p>
-        {% endif %}
-    </div>
+```
+<!-- IMAGEN -->
+<div class="img-box">
+    {% if p.imagen %}
+        <img src="{{ url_for('static', filename='uploads/' + p.imagen) }}">
+    {% else %}
+        <p style="color:#64748b;">📸 Sin imagen</p>
+    {% endif %}
+</div>
 
+<!-- INFO -->
+<div class="info">
     <h3>{{ p.nombre }}</h3>
 
     <p class="precio">
         ${{ "{:,.0f}".format(p.precio_venta).replace(',', '.') }}
     </p>
 
-    <p style="font-size: 0.8rem; color: #94a3b8;">
-        Stock disponible: {{ p.stock }}
+    <p style="font-size:0.9rem; color:#94a3b8;">
+        Stock:
+        <span style="color:{% if p.stock <= 3 %}#ef4444{% else %}white{% endif %};">
+            {{ p.stock }}
+        </span>
     </p>
+</div>
 
-    <form action="{{ url_for('venta', id=p.id) }}" method="POST">
+<!-- FORM -->
+<form action="{{ url_for('venta', id=p.id) }}" method="POST" style="padding:10px;">
 
-        <div class="control">
-            <button type="button" onclick="cambiarCantidad(this,-1)">−</button>
-            <input type="number" name="cantidad" value="1" min="1" max="{{ p.stock }}">
-            <button type="button" onclick="cambiarCantidad(this,1)">+</button>
-        </div>
+    <div class="control">
+        <button type="button" onclick="cambiarCantidad(this,-1)">−</button>
+        <input type="number" name="cantidad" value="1" min="1" max="{{ p.stock }}">
+        <button type="button" onclick="cambiarCantidad(this,1)">+</button>
+    </div>
 
-        <button class="btn">💸 Vender</button>
+    <button class="btn">💸 Vender</button>
 
-    </form>
+</form>
+```
 
 </div>
 {% endfor %}
