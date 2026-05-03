@@ -106,14 +106,28 @@ body{
     color:white;
 }
 
-.info h3{
-    margin:0 0 10px 0;
-}
-
 .precio{
     color:#22c55e;
     font-weight:bold;
     font-size:1.1rem;
+}
+
+/* ALERTA MEJORADA */
+.alert{
+    background: linear-gradient(135deg,#22c55e,#4ade80);
+    color:black;
+    padding:14px;
+    border-radius:12px;
+    margin-bottom:15px;
+    text-align:center;
+    font-weight:bold;
+    box-shadow:0 4px 15px rgba(0,0,0,0.3);
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from {opacity:0; transform: translateY(-10px);}
+    to {opacity:1; transform: translateY(0);}
 }
 
 /* CONTROLES */
@@ -149,23 +163,17 @@ body{
     font-weight:bold;
     width:100%;
 }
-
-/* ALERTA */
-.alert{
-    background:#22c55e;
-    color:black;
-    padding:12px;
-    border-radius:10px;
-    margin-bottom:15px;
-    text-align:center;
-}
 </style>
 
 <!-- ALERTA -->
 
 {% with messages = get_flashed_messages() %}
-{% if messages %} <div id="alertaVenta" class="alert">
-{{ messages[0] }} </div> <audio id="sonidoVenta" src="{{ url_for('static', filename='sounds/venta.mp3') }}"></audio>
+{% if messages %}
+
+<div id="alertaVenta" class="alert">
+{{ messages[0] }}
+</div>
+<audio id="sonidoVenta" src="{{ url_for('static', filename='sounds/venta.mp3') }}"></audio>
 {% endif %}
 {% endwith %}
 
@@ -205,13 +213,9 @@ body{
 <!-- PRODUCTOS -->
 
 <div class="grid">
-
 {% for p in productos %}
-
 <div class="card-producto" data-nombre="{{ p.nombre|lower }}">
 
-```
-<!-- IMAGEN -->
 <div class="img-box">
     {% if p.imagen %}
         <img src="{{ url_for('static', filename='uploads/' + p.imagen) }}">
@@ -220,39 +224,44 @@ body{
     {% endif %}
 </div>
 
-<!-- INFO -->
 <div class="info">
     <h3>{{ p.nombre }}</h3>
 
-    <p class="precio">
-        ${{ "{:,.0f}".format(p.precio_venta).replace(',', '.') }}
-    </p>
+```
+<p class="precio">
+    ${{ "{:,.0f}".format(p.precio_venta).replace(',', '.') }}
+</p>
 
-    <p style="font-size:0.9rem; color:#94a3b8;">
-        Stock:
-        <span style="color:{% if p.stock <= 3 %}#ef4444{% else %}white{% endif %};">
-            {{ p.stock }}
-        </span>
-    </p>
-</div>
-
-<!-- FORM -->
-<form action="{{ url_for('venta', id=p.id) }}" method="POST" style="padding:10px;">
-
-    <div class="control">
-        <button type="button" onclick="cambiarCantidad(this,-1)">−</button>
-        <input type="number" name="cantidad" value="1" min="1" max="{{ p.stock }}">
-        <button type="button" onclick="cambiarCantidad(this,1)">+</button>
-    </div>
-
-    <button class="btn">💸 Vender</button>
-
-</form>
+<p style="font-size:0.9rem; color:#94a3b8;">
+    Stock:
+    <span style="color:{% if p.stock <= 3 %}#ef4444{% else %}white{% endif %};">
+        {{ p.stock }}
+    </span>
+</p>
 ```
 
 </div>
-{% endfor %}
 
+<form action="{{ url_for('venta', id=p.id) }}" method="POST" style="padding:10px;">
+
+```
+<div class="control">
+    <button type="button" onclick="cambiarCantidad(this,-1)">−</button>
+    <input type="number" name="cantidad" value="1" min="1" max="{{ p.stock }}">
+    <button type="button" onclick="cambiarCantidad(this,1)">+</button>
+</div>
+
+{% if p.stock > 0 %}
+    <button class="btn">💸 Vender</button>
+{% else %}
+    <button class="btn" style="background:#475569;" disabled>Sin stock</button>
+{% endif %}
+```
+
+</form>
+
+</div>
+{% endfor %}
 </div>
 
 <script>
@@ -266,6 +275,16 @@ window.addEventListener("load", function() {
         }
     }
 });
+
+/* DESAPARECER ALERTA SOLO */
+setTimeout(() => {
+    let alerta = document.getElementById("alertaVenta");
+    if (alerta) {
+        alerta.style.transition = "opacity 0.5s";
+        alerta.style.opacity = "0";
+        setTimeout(() => alerta.remove(), 500);
+    }
+}, 3000);
 
 function toggleMenu() {
     const menu = document.getElementById("menu");
