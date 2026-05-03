@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div class="container" style="padding: 20px; position:relative;">
+<div class="container">
 
 <style>
 body{
@@ -11,14 +11,21 @@ body{
 }
 
 /* HEADER */
-.header-top{
+.header{
     display:flex;
     justify-content:space-between;
     align-items:center;
     margin-bottom:15px;
 }
 
-.header-right{
+.title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:white;
+}
+
+.actions{
     display:flex;
     gap:10px;
 }
@@ -26,7 +33,7 @@ body{
 .btn-add{
     background:#22c55e;
     color:black;
-    padding:10px 15px;
+    padding:8px 14px;
     border-radius:10px;
     text-decoration:none;
     font-weight:bold;
@@ -36,13 +43,11 @@ body{
 .menu{
     display:none;
     position:absolute;
-    right:20px;
+    right:15px;
     top:60px;
     background:#020617;
     border-radius:12px;
     padding:10px;
-    min-width:180px;
-    z-index:1000;
 }
 
 .menu a{
@@ -53,10 +58,6 @@ body{
 }
 
 /* BUSCADOR */
-.buscador{
-    margin-bottom:20px;
-}
-
 .buscador input{
     width:100%;
     padding:12px;
@@ -64,31 +65,28 @@ body{
     border:none;
     background:#1e293b;
     color:white;
+    margin-bottom:15px;
 }
 
-/* GRID 2 COLUMNAS */
+/* GRID */
 .grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
-    gap:15px;
+    gap:12px;
 }
 
 /* CARD */
-.card-producto{
+.card{
     background:#1e293b;
-    border-radius:18px;
+    border-radius:16px;
     overflow:hidden;
-    box-shadow:0 6px 20px rgba(0,0,0,0.4);
-    transition:0.3s;
+    box-shadow:0 4px 12px rgba(0,0,0,0.3);
 }
 
-.card-producto:hover{
-    transform: translateY(-5px);
-}
-
-/* IMG */
+/* IMG CUADRADA */
 .img-box{
-    height:140px;
+    width:100%;
+    aspect-ratio:1/1;
     background:#0f172a;
 }
 
@@ -100,50 +98,49 @@ body{
 
 /* INFO */
 .info{
-    padding:12px;
+    padding:10px;
     text-align:center;
     color:white;
 }
 
-.info h3{
-    font-size:1rem;
-    margin:5px 0;
+.nombre{
+    font-size:0.9rem;
+    margin-bottom:5px;
 }
 
-/* PRECIO */
 .precio{
     color:#22c55e;
     font-weight:bold;
-    font-size:1.1rem;
-    margin-bottom:10px;
 }
 
 /* CONTROL */
 .control{
     display:flex;
     justify-content:center;
-    gap:8px;
-    margin-bottom:8px;
+    gap:6px;
+    padding:8px;
 }
 
 .control button{
     background:#0f172a;
     color:white;
     border:none;
-    padding:8px 12px;
+    padding:6px 10px;
     border-radius:8px;
 }
 
 .control input{
-    width:50px;
+    width:40px;
     text-align:center;
-    border-radius:8px;
+    border-radius:6px;
     border:none;
 }
 
 /* BOTON */
 .btn{
-    width:100%;
+    width:90%;
+    margin:0 auto 10px;
+    display:block;
     background:linear-gradient(135deg,#06b6d4,#22c55e);
     color:white;
     border:none;
@@ -153,40 +150,26 @@ body{
 }
 </style>
 
-<!-- ALERTA -->
-
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-
-<div id="alertaVenta" style="background:#22c55e; color:black; padding:12px; border-radius:10px; margin-bottom:10px; text-align:center;">
-{{ messages[0] }}
-</div>
-<audio id="sonidoVenta" src="{{ url_for('static', filename='sounds/venta.mp3') }}"></audio>
-{% endif %}
-{% endwith %}
-
 <!-- HEADER -->
 
-<div class="header-top">
-    <h2 style="color:white;">🚀 Inicio</h2>
+<div class="header">
+    <div class="title">
+        <span>🚀</span>
+        <h2>Inicio</h2>
+    </div>
 
 ```
-<div class="header-right">
-    <a href="{{ url_for('agregar') }}" class="btn-add">➕ Agregar</a>
-
-    <button onclick="toggleMenu()" style="background:#111827; color:white; border:none; padding:10px; border-radius:8px;">
-        ☰
-    </button>
+<div class="actions">
+    <a href="{{ url_for('agregar') }}" class="btn-add">+ Agregar</a>
+    <button onclick="toggleMenu()">☰</button>
 </div>
 
 <div id="menu" class="menu">
-    <a href="/ventas">🏠 Inicio</a>
-    <a href="/index">📦 Inventario</a>
-    <a href="/dashboard">📊 Dashboard</a>
-    <a href="/inversion">💸 Inversión</a>
-    <a href="/caja">💰 Caja</a>
-    <a href="/historial_caja">📊 Historial Caja</a>
-    <a href="{{ url_for('logout') }}" style="color:#ff6b6b;">🚪 Salir</a>
+    <a href="/ventas">Inicio</a>
+    <a href="/index">Inventario</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/inversion">Inversión</a>
+    <a href="/caja">Caja</a>
 </div>
 ```
 
@@ -204,12 +187,12 @@ body{
 
 {% for p in productos %}
 
-<div class="card-producto" data-nombre="{{ p.nombre|lower }}">
+<div class="card" data-nombre="{{ p.nombre|lower }}">
 
 ```
 <div class="img-box">
     {% if p.imagen %}
-        <img src="{{ url_for('static', filename='uploads/' + p.imagen) }}" loading="lazy">
+        <img src="{{ url_for('static', filename='uploads/' + p.imagen) }}">
     {% else %}
         <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#64748b;">
             📸
@@ -218,14 +201,11 @@ body{
 </div>
 
 <div class="info">
-    <h3>{{ p.nombre }}</h3>
-
-    <p class="precio">
-        ${{ "{:,.0f}".format(p.precio_venta).replace(',', '.') }}
-    </p>
+    <div class="nombre">{{ p.nombre }}</div>
+    <div class="precio">${{ "{:,.0f}".format(p.precio_venta).replace(',', '.') }}</div>
 </div>
 
-<form action="{{ url_for('venta', id=p.id) }}" method="POST" style="padding:10px;">
+<form action="{{ url_for('venta', id=p.id) }}" method="POST">
 
     <div class="control">
         <button type="button" onclick="cambiarCantidad(this,-1)">−</button>
@@ -245,29 +225,23 @@ body{
 
 <script>
 function toggleMenu() {
-    const menu = document.getElementById("menu");
-    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+    let m = document.getElementById("menu");
+    m.style.display = m.style.display === "block" ? "none" : "block";
 }
 
 document.getElementById("buscador").addEventListener("keyup", function() {
     let filtro = this.value.toLowerCase();
-    let productos = document.querySelectorAll(".card-producto");
-
-    productos.forEach(p => {
+    document.querySelectorAll(".card").forEach(p => {
         let nombre = p.getAttribute("data-nombre");
         p.style.display = nombre.includes(filtro) ? "block" : "none";
     });
 });
 
-function cambiarCantidad(btn, cambio) {
+function cambiarCantidad(btn, cambio){
     let input = btn.parentElement.querySelector("input");
-    let maxStock = parseInt(input.getAttribute("max")) || 999;
-    let valor = parseInt(input.value) || 1;
-
+    let valor = parseInt(input.value)||1;
     valor += cambio;
-    if (valor < 1) valor = 1;
-    if (valor > maxStock) valor = maxStock;
-
+    if(valor<1) valor=1;
     input.value = valor;
 }
 </script>
