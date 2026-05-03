@@ -2,79 +2,62 @@
 
 {% block content %}
 
-<div class="container" style="padding: 15px; max-width: 1200px; margin:auto;">
+<div class="container" style="padding: 10px;">
 
 ```
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-    <h2 style="color: white;">📦 Inventario</h2>
+<h2 style="color: white;">📦 Inventario</h2>
 
-    <div style="position: relative;">
-        <button onclick="toggleMenu()" style="font-size: 20px; background: #1e293b; color: white; border:none; padding:10px 16px; border-radius:10px;">☰</button>
-
-        <div id="menu" style="display:none; position:absolute; right:0; top:50px; background:#1e293b; border-radius:10px; padding:10px; min-width:180px;">
-            <a href="/ventas" style="display:block; color:white; padding:10px;">🏠 Inicio</a>
-            <a href="/index" style="display:block; color:white; padding:10px;">📦 Inventario</a>
-            <a href="/dashboard" style="display:block; color:white; padding:10px;">📊 Dashboard</a>
-            <a href="/inversion" style="display:block; color:white; padding:10px;">💸 Inversión</a>
-            <a href="/caja" style="display:block; color:white; padding:10px;">💰 Caja</a>
-            <a href="/historial_caja" style="display:block; color:white; padding:10px;">📊 Historial Caja</a>
-            <a href="{{ url_for('logout') }}" style="display:block; color:#ff6b6b; padding:10px;">🚪 Salir</a>
-        </div>
-    </div>
-</div>
-
-<div style="margin-bottom: 25px; display:flex; justify-content:center;">
+<div style="margin-bottom: 20px;">
     <input type="text" id="buscador" placeholder="🔍 Buscar producto..."
-           style="width: 90%; max-width:500px; padding:12px; border-radius:12px; border:none; background: #1e293b; color: white;">
+           style="width: 100%; padding:12px; border-radius:12px; border:none; background: #1e293b; color: white;">
 </div>
 
-<div id="gridProductos" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:20px;">
+<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:20px;">
 
     {% for p in productos %}
-    <div class="card-producto" data-nombre="{{ p[1]|lower }}"
-         style="background:#1e293b; border-radius:18px; overflow:hidden;">
+    <div style="background:#1e293b; border-radius:20px; overflow:hidden;">
 
-        <!-- IMAGEN (CORREGIDO) -->
+        <!-- IMAGEN -->
         <div style="height:200px; background:#0f172a; display:flex; align-items:center; justify-content:center;">
-            {% if p[6] %}
-                <img src="{{ url_for('static', filename='uploads/' ~ p[6]) }}"
+            {% if p["imagen"] %}
+                <img src="{{ url_for('static', filename='uploads/' ~ p['imagen']) }}"
                      style="width:100%; height:100%; object-fit:cover;">
             {% else %}
-                <div style="color:#475569;">
-                    📸 Sin foto
-                </div>
+                <div style="color:#64748b;">📸 Sin foto</div>
             {% endif %}
         </div>
 
         <!-- INFO -->
         <div style="padding:15px; color:white;">
-            <h3>{{ p[1] }}</h3>
 
-            <p style="color:#10b981; font-weight:bold;">
-                Venta: ${{ "{:,.0f}".format(p[4]).replace(',', '.') }}
+            <h3>{{ p["nombre"] }}</h3>
+
+            <p style="color:#22c55e; font-weight:bold;">
+                Venta: ${{ "{:,.0f}".format(p["precio_venta"]).replace(',', '.') }}
             </p>
 
             <p style="color:#94a3b8;">
-                Compra: ${{ "{:,.0f}".format(p[3]).replace(',', '.') }}
+                Compra: ${{ "{:,.0f}".format(p["precio_compra"]).replace(',', '.') }}
             </p>
 
-            <!-- STOCK (CORREGIDO) -->
             <p>
                 Stock:
-                <strong style="color: {% if p[7]|int <= 3 %}red{% else %}white{% endif %};">
-                    {{ p[7] }}
-                </strong>
+                <span style="color: {% if p['stock'] <= 3 %}red{% else %}white{% endif %};">
+                    {{ p["stock"] }}
+                </span>
             </p>
+
         </div>
 
-        <div style="padding:12px; display:flex; gap:10px;">
-            <a href="{{ url_for('editar', id=p[0]) }}"
+        <!-- BOTONES -->
+        <div style="display:flex; gap:10px; padding:10px;">
+            <a href="{{ url_for('editar', id=p['id']) }}"
                style="flex:1; background:#3b82f6; color:white; text-align:center; padding:10px; border-radius:10px;">
                ✏️ Editar
             </a>
 
-            <a href="{{ url_for('eliminar', id=p[0]) }}"
-               style="background:#ef4444; color:white; padding:10px; border-radius:10px;">
+            <a href="{{ url_for('eliminar', id=p['id']) }}"
+               style="background:#ef4444; padding:10px; border-radius:10px;">
                🗑️
             </a>
         </div>
@@ -86,22 +69,4 @@
 ```
 
 </div>
-
-<script>
-function toggleMenu() {
-    const menu = document.getElementById("menu");
-    menu.style.display = (menu.style.display === "block") ? "none" : "block";
-}
-
-document.getElementById("buscador").addEventListener("keyup", function() {
-    let filtro = this.value.toLowerCase();
-    let productos = document.querySelectorAll(".card-producto");
-
-    productos.forEach(p => {
-        let nombre = p.getAttribute("data-nombre");
-        p.style.display = nombre.includes(filtro) ? "block" : "none";
-    });
-});
-</script>
-
 {% endblock %}
