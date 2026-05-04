@@ -201,6 +201,20 @@ def editar(id):
 
     con.close()
     return render_template("editar.html", producto=p)
+
+@app.route("/eliminar/<int:id>")
+def eliminar(id):
+    if not esta_logeado():
+        return redirect(url_for('login'))
+
+    placeholder = get_placeholder()
+
+    with conectar() as con:
+        con.execute(f"DELETE FROM productos WHERE id={placeholder}", (id,))
+        con.commit()
+
+    return redirect(url_for('index'))
+    
 # --- VENTAS Y TICKETS ---
 
 @app.route("/venta/<int:id>", methods=["POST"])
