@@ -10,10 +10,12 @@ app.secret_key = "vapers_store_key_2024"
 
 # --- CONFIGURACIÓN ---
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
-os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-app.config["UPLOAD_FOLDER"] = "static/uploads"
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
+
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER  # 🔥 primero se define
+
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)  # 🔥 luego se usa
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 USUARIO_ADMIN = "admin"
