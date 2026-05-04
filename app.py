@@ -17,7 +17,7 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 USUARIO_ADMIN = "admin"
-CLAVE_ADMIN = "Yepes1504"
+CLAVE_ADMIN = "1234"
 
 
 def conectar():
@@ -33,7 +33,8 @@ def conectar():
 
 def init_db():
     with conectar() as con:
-               # PRODUCTOS ✅
+
+        # PRODUCTOS ✅
         con.execute("""
         CREATE TABLE IF NOT EXISTS productos (
             id SERIAL PRIMARY KEY,
@@ -70,6 +71,7 @@ def init_db():
             fecha TEXT
         )
         """)
+
         # 🔥 PARCHE DE SEGURIDAD: Fuerza la columna si no existe
         try:
             con.execute("ALTER TABLE productos ADD COLUMN precio_mayorista REAL")
@@ -149,7 +151,9 @@ def ventas():
 
 @app.route("/agregar", methods=["GET", "POST"])
 def agregar():
-    if not esta_logeado(): return redirect(url_for('login'))
+    if not esta_logeado(): 
+        return redirect(url_for('login'))
+
     if request.method == "POST":
         try:
             nombre = request.form.get("nombre")
@@ -158,6 +162,7 @@ def agregar():
             p_venta = float(request.form.get("precio_venta") or 0)
             p_mayorista = float(request.form.get("precio_mayorista") or 0)
             stock = int(request.form.get("stock") or 0)
+
             n_img = ""
             if 'imagen' in request.files:
                 img = request.files['imagen']
@@ -166,18 +171,28 @@ def agregar():
                     img.save(os.path.join(app.config["UPLOAD_FOLDER"], n_img))
 
             with conectar() as con:
+
+                # 🔥 INSERT PRODUCTO (CORREGIDO)
                 con.execute("""
-                    INSERT INTO productos (nombre, categoria, precio_compra, precio_venta, precio_mayorista, stock, imagen)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO productos 
+                    (nombre, categoria, precio_compra, precio_venta, precio_mayorista, stock, imagen)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """, (nombre, categoria, p_compra, p_venta, p_mayorista, stock, n_img))
 
+                # 🔥 INSERT INVERSION (CORREGIDO)
                 if stock > 0 and p_compra > 0:
-                    con.execute("INSERT INTO inversiones (monto, descripcion, fecha) VALUES (?, ?, ?)",
-                                (p_compra * stock, f"Compra inicial {nombre}", datetime.now().strftime("%Y-%m-%d")))
+                    con.execute("""
+                        INSERT INTO inversiones (monto, descripcion, fecha)
+                        VALUES (%s, %s, %s)
+                    """, (p_compra * stock, f"Compra inicial {nombre}", datetime.now().strftime("%Y-%m-%d")))
+
                 con.commit()
+
             return redirect(url_for('index'))
+
         except Exception as e:
             return f"Error al agregar: {e}"
+
     return render_template("agregar.html")
 
 
