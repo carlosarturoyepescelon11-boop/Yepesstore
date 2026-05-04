@@ -32,42 +32,48 @@
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>Precio Compra ($):</label>
-                <input type="number" step="0.01" name="precio_compra" value="{{ producto[3] }}" required>
-            </div>
+       <div class="form-row">
+    <div class="form-group">
+        <label>Precio Compra ($):</label>
+        <input type="number" step="0.01" name="precio_compra"
+               value="{{ producto[3] }}"
+               placeholder="Dejar igual"
+               formnovalidate>
+    </div>
 
-            <div class="form-group">
-                <label>Precio Venta ($):</label>
-                <input type="number" step="0.01" name="precio_venta" value="{{ producto[4] }}" required>
-            </div>
-        </div>
+    <div class="form-group">
+        <label>Precio Venta ($):</label>
+        <input type="number" step="0.01" name="precio_venta"
+               value="{{ producto[4] }}"
+               placeholder="Dejar igual"
+               formnovalidate>
+    </div>
+</div>
 
-        <div class="form-group">
-            <label>Precio Mayorista ($):</label>
-            <input type="number" step="0.01" name="precio_mayorista" value="{{ producto[5] }}">
-        </div>
+<!-- ❌ ELIMINAMOS PRECIO MAYORISTA -->
 
-        <div class="form-group">
-            <label>Cantidad en Stock:</label>
-            <input type="number" name="stock" value="{{ producto[6] }}" required>
-        </div>
+<div class="form-group">
+    <label>Cantidad en Stock:</label>
+    <input type="number" name="stock"
+           value="{{ producto[6] }}"
+           placeholder="Dejar igual"
+           formnovalidate>
+</div>
 
-        <!-- 📸 IMAGEN -->
-        <div class="form-group">
-            <label>Imagen actual:</label><br>
-            {% if producto[7] %}
-                <img src="{{ url_for('static', filename='uploads/' ~ producto[7]) }}"
-                     style="width:120px; border-radius:10px; margin-bottom:10px;">
-            {% else %}
-                <p>Sin imagen</p>
-            {% endif %}
+<!-- 📸 IMAGEN -->
+<div class="form-group">
+    <label>Imagen actual:</label><br>
 
-            <label>Cambiar imagen:</label>
-            <input type="file" name="imagen" class="file-input">
-        </div>
+    {% if producto[7] %}
+        <img src="{{ url_for('static', filename='uploads/' ~ producto[7]) }}"
+             style="width:120px; border-radius:10px; margin-bottom:10px;">
+    {% else %}
+        <p style="color:#64748b;">📸 Sin imagen</p>
+    {% endif %}
 
+    <label>Cambiar imagen (opcional):</label>
+    <input type="file" name="imagen" class="file-input">
+</div>
         <div class="form-actions">
             <button type="submit" class="btn-save">💾 Guardar Cambios</button>
             <a href="/index" class="btn-cancel">Cancelar</a>
