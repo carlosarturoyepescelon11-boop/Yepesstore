@@ -259,14 +259,32 @@ def dashboard():
     )
 @app.route("/caja")
 def caja():
-    if not esta_logeado(): return redirect(url_for('login'))
+    if not esta_logeado():
+        return redirect(url_for('login'))
+
     placeholder = get_placeholder()
     con = conectar()
+
     hoy = datetime.now().strftime("%Y-%m-%d")
-    v_total = (con.execute(f"SELECT SUM(precio_venta * cantidad) FROM ventas WHERE fecha={placeholder}", (hoy,)).fetchone()[0]) or 0
-    inv_total = (con.execute(f"SELECT SUM(monto) FROM inversiones WHERE fecha={placeholder}", (hoy,)).fetchone()[0]) or 0
+
+    v_total = con.execute(
+        f"SELECT SUM(precio_venta * cantidad) AS total FROM ventas WHERE fecha={placeholder}",
+        (hoy,)
+    ).fetchone()
+
+    inv_total = con.execute(
+        f"SELECT SUM(monto) AS total FROM inversiones WHERE fecha={placeholder}",
+        (hoy,)
+    ).fetchone()
+
     con.close()
-    return render_template("caja.html", ventas=v_total, inversion=inv_total, ganancia=v_total - inv_total)
+
+    return render_template(
+        "caja.html",
+        ventas=v_total["total"] or 0,
+        inversion=inv_total["total"] or 0,
+        ganancia=(v_total["total"] or 0) - (inv_total["total"] or 0)
+    )
 
 @app.route("/inversion", methods=["GET", "POST"])
 def inversion():
