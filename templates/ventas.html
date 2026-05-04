@@ -163,7 +163,7 @@ body{
 
     <div class="actions">
         <a href="{{ url_for('agregar') }}" class="btn-add">+ Agregar</a>
-        <button onclick="toggleMenu()" style="background:#111827;color:white;border:none;padding:8px;border-radius:8px;">☰</button>
+        <button class="btn-menu" onclick="toggleMenu(event)">☰</button>
     </div>
 
     <div id="menu" class="menu">
@@ -220,11 +220,11 @@ body{
 </div>
 
 <script>
-function toggleMenu(){
+function toggleMenu(event){
+    event.stopPropagation(); // 🔥 evita que se cierre al instante
     let m = document.getElementById("menu");
     m.style.display = m.style.display === "block" ? "none" : "block";
 }
-
 document.getElementById("buscador").addEventListener("keyup", function(){
     let filtro = this.value.toLowerCase();
     document.querySelectorAll(".card").forEach(p=>{
@@ -240,6 +240,16 @@ function cambiarCantidad(btn, cambio){
     if(valor<1) valor=1;
     input.value = valor;
 }
+    document.addEventListener("click", function(event) {
+    let menu = document.getElementById("menu");
+    let button = document.querySelector(".btn-menu");
+
+    if (menu && menu.style.display === "block") {
+        if (!menu.contains(event.target) && !button.contains(event.target)) {
+            menu.style.display = "none";
+        }
+    }
+});
 </script>
 
 </div>
