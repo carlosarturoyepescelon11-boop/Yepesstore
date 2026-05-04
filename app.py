@@ -33,10 +33,10 @@ def conectar():
 
 def init_db():
     with conectar() as con:
-        # Tablas con formato INTEGER PRIMARY KEY para SQLite
+               # PRODUCTOS ✅
         con.execute("""
         CREATE TABLE IF NOT EXISTS productos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             nombre TEXT,
             categoria TEXT,
             precio_compra REAL,
@@ -46,9 +46,11 @@ def init_db():
             imagen TEXT
         )
         """)
+
+        # VENTAS ✅ (CORREGIDO)
         con.execute("""
         CREATE TABLE IF NOT EXISTS ventas (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             producto_id INTEGER,
             nombre TEXT,
             cantidad INTEGER,
@@ -58,15 +60,16 @@ def init_db():
             fecha TEXT
         )
         """)
+
+        # INVERSIONES ✅ (CORREGIDO)
         con.execute("""
         CREATE TABLE IF NOT EXISTS inversiones (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             monto REAL,
             descripcion TEXT,
             fecha TEXT
         )
         """)
-
         # 🔥 PARCHE DE SEGURIDAD: Fuerza la columna si no existe
         try:
             con.execute("ALTER TABLE productos ADD COLUMN precio_mayorista REAL")
