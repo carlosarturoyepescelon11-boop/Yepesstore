@@ -140,10 +140,10 @@ def agregar():
 
             placeholder = get_placeholder()
             with conectar() as con:
-                con.execute(f"INSERT INTO productos (nombre, categoria, precio_compra, precio_venta, precio_mayorista, stock, imagen) VALUES ({placeholder},{placeholder},{placeholder},{placeholder},{placeholder},{placeholder},{placeholder})", 
+                con.execute(f"INSERT INTO productos (nombre, categoria, precio_compra, precio_venta, precio_mayorista, stock, imagen) VALUES ({placeholder},{placeholder},{placeholder},{placeholder},{placeholder},{placeholder},{placeholder})",
                             (nombre, categoria, p_compra, p_venta, p_mayorista, stock, n_img))
                 if stock > 0 and p_compra > 0:
-                    con.execute(f"INSERT INTO inversiones (monto, descripcion, fecha) VALUES ({placeholder},{placeholder},{placeholder})", 
+                    con.execute(f"INSERT INTO inversiones (monto, descripcion, fecha) VALUES ({placeholder},{placeholder},{placeholder})",
                                 (p_compra * stock, f"Compra inicial {nombre}", datetime.now().strftime("%Y-%m-%d")))
                 con.commit()
             return redirect(url_for('index'))
@@ -152,52 +152,56 @@ def agregar():
     return render_template("agregar.html")
 
 @app.route("/editar/<int:id>", methods=["GET", "POST"])
-if request.method == "POST":
-    nombre = request.form.get("nombre") or p["nombre"]
-    categoria = request.form.get("categoria") or p["categoria"]
+def editar(id):
+    if not esta_logeado(): 
+        return redirect(url_for('login'))
 
-    p_compra = request.form.get("precio_compra")
-    p_venta = request.form.get("precio_venta")
-    stock = request.form.get("stock")
-
-    p_compra = float(p_compra) if p_compra else p["precio_compra"]
-    p_venta = float(p_venta) if p_venta else p["precio_venta"]
-    stock = int(stock) if stock else p["stock"]
-
-    # ❌ quitamos mayorista (no lo usas aquí)
-    p_mayorista = p["precio_mayorista"]
-
-    n_img = p["imagen"] if p else ""
-    if 'imagen' in request.files:
-        img = request.files['imagen']
-        if img and img.filename != "":
-            n_img = str(int(time.time())) + "_" + secure_filename(img.filename)
-            img.save(os.path.join(app.config["UPLOAD_FOLDER"], n_img))
-
-    con.execute(f"""
-        UPDATE productos SET 
-        nombre={placeholder}, 
-        categoria={placeholder}, 
-        precio_compra={placeholder}, 
-        precio_venta={placeholder}, 
-        precio_mayorista={placeholder}, 
-        stock={placeholder}, 
-        imagen={placeholder} 
-        WHERE id={placeholder}
-    """, (nombre, categoria, p_compra, p_venta, p_mayorista, stock, n_img, id))
-
-    con.commit()
-    con.close()
-    return redirect(url_for('index'))
-
-@app.route("/eliminar/<int:id>")
-def eliminar(id):
-    if not esta_logeado(): return redirect(url_for('login'))
     placeholder = get_placeholder()
-    with conectar() as con:
-        con.execute(f"DELETE FROM productos WHERE id={placeholder}", (id,))
+    con = conectar()
+
+    p = con.execute(f"SELECT * FROM productos WHERE id={placeholder}", (id,)).fetchone()
+
+    if request.method == "POST":
+        nombre = request.form.get("nombre") or p["nombre"]
+        categoria = request.form.get("categoria") or p["categoria"]
+
+        p_compra = request.form.get("precio_compra")
+        p_venta = request.form.get("precio_venta")
+        stock = request.form.get("stock")
+
+        p_compra = float(p_compra) if p_compra else p["precio_compra"]
+        p_venta = float(p_venta) if p_venta else p["precio_venta"]
+        stock = int(stock) if stock else p["stock"]
+
+        # 🔥 mantenemos mayorista sin tocar
+        p_mayorista = p["precio_mayorista"]
+
+        n_img = p["imagen"]
+        if 'imagen' in request.files:
+            img = request.files['imagen']
+            if img and img.filename != "":
+                n_img = str(int(time.time())) + "_" + secure_filename(img.filename)
+                img.save(os.path.join(app.config["UPLOAD_FOLDER"], n_img))
+
+        con.execute(f"""
+            UPDATE productos SET 
+            nombre={placeholder}, 
+            categoria={placeholder}, 
+            precio_compra={placeholder}, 
+            precio_venta={placeholder}, 
+            precio_mayorista={placeholder}, 
+            stock={placeholder}, 
+            imagen={placeholder} 
+            WHERE id={placeholder}
+        """, (nombre, categoria, p_compra, p_venta, p_mayorista, stock, n_img, id))
+
         con.commit()
-    return redirect(url_for('index'))
+        con.close()
+
+        return redirect(url_for('index'))
+
+    con.close()
+    return render_template("editar.html", producto=p)
 
 # --- VENTAS Y TICKETS ---
 
