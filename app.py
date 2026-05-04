@@ -279,7 +279,7 @@ def caja():
         (hoy,)
     ).fetchone()
 
-    # 💸 INVERSIÓN DEL DÍA (solo informativo)
+    # 💸 INVERSIÓN  (solo informativo)
     inv_total = con.execute(
         f"SELECT SUM(monto) AS total FROM inversiones WHERE fecha={placeholder}",
         (hoy,)
