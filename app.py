@@ -21,13 +21,16 @@ CLAVE_ADMIN = "Yepes1504"
 
 def conectar():
     DATABASE_URL = os.getenv("DATABASE_URL")
+
     if DATABASE_URL:
         import psycopg
+        from psycopg.rows import dict_row  # 🔥 IMPORTANTE
         conn = psycopg.connect(DATABASE_URL)
+        conn.row_factory = dict_row       # 🔥 ESTO ARREGLA TODO
         return conn
     else:
         conn = sqlite3.connect("database.db")
-        conn.row_factory = sqlite3.Row  # Permite acceder como p["nombre"]
+        conn.row_factory = sqlite3.Row
         return conn
 
 def get_placeholder():
