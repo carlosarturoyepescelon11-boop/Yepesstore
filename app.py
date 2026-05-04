@@ -21,11 +21,15 @@ CLAVE_ADMIN = "Yepes1504"
 
 
 def conectar():
-    # Usamos SQLite forzado para evitar el error de PostgreSQL en Render
-    con = sqlite3.connect("database.db", timeout=10)
-    con.row_factory = sqlite3.Row
-    return con
+    import os
+    DATABASE_URL = os.getenv("DATABASE_URL")
 
+    if DATABASE_URL:
+        import psycopg
+        return psycopg.connect(DATABASE_URL)
+    else:
+        import sqlite3
+        return sqlite3.connect("database.db")
 
 def init_db():
     with conectar() as con:
