@@ -3,25 +3,48 @@
 {% block content %}
 <div style="max-width:600px; margin:auto; padding:20px;">
 
-    <h2 style="text-align:center;">💰 Caja del Día</h2>
+    <h2 style="text-align:center; color:white;">💰 Caja del Día</h2>
 
     <div style="display:flex; flex-direction:column; gap:15px; margin-top:20px;">
 
-        <div style="background:#022c22; padding:15px; border-radius:10px;">
-            🟢 Ventas: <strong>${{ ventas }}</strong>
+        <!-- VENTAS -->
+        <div style="background:#022c22; padding:15px; border-radius:12px; color:white;">
+            🟢 Ventas:
+            <strong>
+                {% if ventas == 0 %}
+                    $0
+                {% else %}
+                    ${{ "{:,.0f}".format(ventas).replace(',', '.') }}
+                {% endif %}
+            </strong>
         </div>
 
-        <div style="background:#1e3a8a; padding:15px; border-radius:10px;">
-            🔵 Inversión: <strong>${{ inversion }}</strong>
+        <!-- INVERSION -->
+        <div style="background:#1e3a8a; padding:15px; border-radius:12px; color:white;">
+            🔵 Inversión:
+            <strong>
+                ${{ "{:,.0f}".format(inversion).replace(',', '.') }}
+            </strong>
         </div>
 
-        <div style="background:#7f1d1d; padding:15px; border-radius:10px;">
-            🔴 Gastos: <strong>${{ gastos }}</strong>
+        <!-- GASTOS -->
+        <div style="background:#7f1d1d; padding:15px; border-radius:12px; color:white;">
+            🔴 Gastos:
+            <strong>
+                {% if gastos %}
+                    ${{ "{:,.0f}".format(gastos).replace(',', '.') }}
+                {% else %}
+                    $0
+                {% endif %}
+            </strong>
         </div>
 
-        <div style="background:#111827; padding:20px; border-radius:12px; font-size:20px;">
+        <!-- GANANCIA -->
+        <div style="background:#111827; padding:20px; border-radius:14px; font-size:20px; color:white;">
             🟡 Ganancia del Día:
-            <strong>${{ ganancia }}</strong>
+            <strong style="color: {% if ganancia >= 0 %}#10b981{% else %}#ef4444{% endif %};">
+                ${{ "{:,.0f}".format(ganancia).replace(',', '.') }}
+            </strong>
         </div>
 
     </div>
