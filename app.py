@@ -267,11 +267,19 @@ def caja():
 
     hoy = datetime.now().strftime("%Y-%m-%d")
 
+    # 💰 TOTAL VENTAS DEL DÍA
     v_total = con.execute(
         f"SELECT SUM(precio_venta * cantidad) AS total FROM ventas WHERE fecha={placeholder}",
         (hoy,)
     ).fetchone()
 
+    # 📈 GANANCIA REAL (SOLO DE VENTAS)
+    ganancia = con.execute(
+        f"SELECT SUM(ganancia) AS total FROM ventas WHERE fecha={placeholder}",
+        (hoy,)
+    ).fetchone()
+
+    # 💸 INVERSIÓN DEL DÍA (solo informativo)
     inv_total = con.execute(
         f"SELECT SUM(monto) AS total FROM inversiones WHERE fecha={placeholder}",
         (hoy,)
@@ -283,7 +291,8 @@ def caja():
         "caja.html",
         ventas=v_total["total"] or 0,
         inversion=inv_total["total"] or 0,
-        ganancia=(v_total["total"] or 0) - (inv_total["total"] or 0)
+        gastos=0,  # por ahora
+        ganancia=ganancia["total"] or 0
     )
 
 @app.route("/inversion", methods=["GET", "POST"])
