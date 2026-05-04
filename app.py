@@ -222,18 +222,41 @@ def ticket():
 
 @app.route("/dashboard")
 def dashboard():
-    if not esta_logeado(): return redirect(url_for('login'))
+    if not esta_logeado(): 
+        return redirect(url_for('login'))
+
     placeholder = get_placeholder()
     con = conectar()
+
     hoy_f = datetime.now().strftime("%Y-%m-%d")
-    
-    total_g = (con.execute("SELECT SUM(ganancia) FROM ventas").fetchone()[0]) or 0
-    inv_t = (con.execute("SELECT SUM(monto) FROM inversiones").fetchone()[0]) or 0
-    hoy_g = (con.execute(f"SELECT SUM(ganancia) FROM ventas WHERE fecha={placeholder}", (hoy_f,)).fetchone()[0]) or 0
-    ventas_hoy = (con.execute(f"SELECT SUM(precio_venta * cantidad) FROM ventas WHERE fecha={placeholder}", (hoy_f,)).fetchone()[0]) or 0
-    ventas_list = con.execute("SELECT * FROM ventas ORDER BY id DESC LIMIT 10").fetchall()
+
+    total_g = con.execute("SELECT SUM(ganancia) FROM ventas").fetchone()[0] or 0
+    inv_t = con.execute("SELECT SUM(monto) FROM inversiones").fetchone()[0] or 0
+
+    hoy_g = con.execute(
+        f"SELECT SUM(ganancia) FROM ventas WHERE fecha={placeholder}",
+        (hoy_f,)
+    ).fetchone()[0] or 0
+
+    ventas_hoy = con.execute(
+        f"SELECT SUM(precio_venta * cantidad) FROM ventas WHERE fecha={placeholder}",
+        (hoy_f,)
+    ).fetchone()[0] or 0
+
+    ventas_list = con.execute(
+        "SELECT * FROM ventas ORDER BY id DESC LIMIT 10"
+    ).fetchall()
+
     con.close()
-    return render_template("dashboard.html", total=total_g, inversion=inv_t, hoy=hoy_g, ventas_hoy=ventas_hoy, ventas=ventas_list)
+
+    return render_template(
+        "dashboard.html",
+        total=total_g,
+        inversion=inv_t,
+        hoy=hoy_g,
+        ventas_hoy=ventas_hoy,
+        ventas=ventas_list
+    )
 
 @app.route("/caja")
 def caja():
