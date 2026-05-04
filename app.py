@@ -222,7 +222,7 @@ def ticket():
 
 @app.route("/dashboard")
 def dashboard():
-    if not esta_logeado(): 
+    if not esta_logeado():
         return redirect(url_for('login'))
 
     placeholder = get_placeholder()
@@ -230,18 +230,18 @@ def dashboard():
 
     hoy_f = datetime.now().strftime("%Y-%m-%d")
 
-    total_g = con.execute("SELECT SUM(ganancia) FROM ventas").fetchone()[0] or 0
-    inv_t = con.execute("SELECT SUM(monto) FROM inversiones").fetchone()[0] or 0
+    total_g = con.execute("SELECT SUM(ganancia) AS total FROM ventas").fetchone()
+    inv_t = con.execute("SELECT SUM(monto) AS total FROM inversiones").fetchone()
 
     hoy_g = con.execute(
-        f"SELECT SUM(ganancia) FROM ventas WHERE fecha={placeholder}",
+        f"SELECT SUM(ganancia) AS total FROM ventas WHERE fecha={placeholder}",
         (hoy_f,)
-    ).fetchone()[0] or 0
+    ).fetchone()
 
     ventas_hoy = con.execute(
-        f"SELECT SUM(precio_venta * cantidad) FROM ventas WHERE fecha={placeholder}",
+        f"SELECT SUM(precio_venta * cantidad) AS total FROM ventas WHERE fecha={placeholder}",
         (hoy_f,)
-    ).fetchone()[0] or 0
+    ).fetchone()
 
     ventas_list = con.execute(
         "SELECT * FROM ventas ORDER BY id DESC LIMIT 10"
@@ -251,13 +251,12 @@ def dashboard():
 
     return render_template(
         "dashboard.html",
-        total=total_g,
-        inversion=inv_t,
-        hoy=hoy_g,
-        ventas_hoy=ventas_hoy,
+        total=total_g["total"] or 0,
+        inversion=inv_t["total"] or 0,
+        hoy=hoy_g["total"] or 0,
+        ventas_hoy=ventas_hoy["total"] or 0,
         ventas=ventas_list
     )
-
 @app.route("/caja")
 def caja():
     if not esta_logeado(): return redirect(url_for('login'))
