@@ -173,7 +173,6 @@ def editar(id):
         p_venta = float(p_venta) if p_venta else p["precio_venta"]
         stock = int(stock) if stock else p["stock"]
 
-        # 🔥 mantenemos mayorista sin tocar
         p_mayorista = p["precio_mayorista"]
 
         n_img = p["imagen"]
@@ -202,7 +201,6 @@ def editar(id):
 
     con.close()
     return render_template("editar.html", producto=p)
-
 # --- VENTAS Y TICKETS ---
 
 @app.route("/venta/<int:id>", methods=["POST"])
