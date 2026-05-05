@@ -140,11 +140,16 @@ def agregar():
             p_mayorista = float(request.form.get("precio_mayorista") or 0)
             stock = int(request.form.get("stock") or 0)
             n_img = ""
-            if 'imagen' in request.files:
-                img = request.files['imagen']
-                    if img and img.filename != "":
-                    resultado = cloudinary.uploader.upload(img)
-                    n_img = resultado["secure_url"]
+if 'imagen' in request.files:
+    img = request.files['imagen']
+
+    if img and img.filename.strip() != "":
+        try:
+            resultado = cloudinary.uploader.upload(img)
+            n_img = resultado["secure_url"]
+            print("IMAGEN SUBIDA:", n_img)
+        except Exception as e:
+            print("ERROR CLOUDINARY:", e)
 
             placeholder = get_placeholder()
             with conectar() as con:
