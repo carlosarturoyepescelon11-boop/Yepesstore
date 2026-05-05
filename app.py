@@ -155,55 +155,59 @@ def agregar():
 
 @app.route("/editar/<int:id>", methods=["GET", "POST"])
 def editar(id):
-    if not esta_logeado(): 
+    if not esta_logeado():
         return redirect(url_for('login'))
 
     placeholder = get_placeholder()
-    con = conectar()
 
-    p = con.execute(f"SELECT * FROM productos WHERE id={placeholder}", (id,)).fetchone()
+    with conectar() as con:
+        p = con.execute(
+            f"SELECT * FROM productos WHERE id={placeholder}", (id,)
+        ).fetchone()
 
-    if request.method == "POST":
-        nombre = request.form.get("nombre") or p["nombre"]
-        categoria = request.form.get("categoria") or p["categoria"]
+        if request.method == "POST":
+            nombre = request.form.get("nombre") or p["nombre"]
+            categoria = request.form.get("categoria") or p["categoria"]
 
-        p_compra = request.form.get("precio_compra")
-        p_venta = request.form.get("precio_venta")
-        stock = request.form.get("stock")
+            p_compra = request.form.get("precio_compra")
+            p_venta = request.form.get("precio_venta")
+            stock = request.form.get("stock")
 
-        p_compra = float(p_compra) if p_compra else p["precio_compra"]
-        p_venta = float(p_venta) if p_venta else p["precio_venta"]
-        stock = int(stock) if stock else p["stock"]
+            p_compra = float(p_compra) if p_compra else p["precio_compra"]
+            p_venta = float(p_venta) if p_venta else p["precio_venta"]
+            stock = int(stock) if stock else p["stock"]
 
-        p_mayorista = p["precio_mayorista"]
+            p_mayorista = p["precio_mayorista"]
 
-        n_img = p["imagen"]
-        if 'imagen' in request.files:
-            img = request.files['imagen']
-            if img and img.filename != "":
-                n_img = str(int(time.time())) + "_" + secure_filename(img.filename)
-                resultado = cloudinary.uploader.upload(img)
-                n_img = resultado["secure_url"]
-        con.execute(f"""
-            UPDATE productos SET 
-            nombre={placeholder}, 
-            categoria={placeholder}, 
-            precio_compra={placeholder}, 
-            precio_venta={placeholder}, 
-            precio_mayorista={placeholder}, 
-            stock={placeholder}, 
-            imagen={placeholder} 
-            WHERE id={placeholder}
-        """, (nombre, categoria, p_compra, p_venta, p_mayorista, stock, n_img, id))
+            # 🔥 IMAGEN CORREGIDA
+            n_img = p["imagen"]
 
-        con.commit()
-        con.close()
+            if 'imagen' in request.files:
+                img = request.files['imagen']
 
-        return redirect(url_for('index'))
+                if img and img.filename.strip() != "":
+                    try:
+                        resultado = cloudinary.uploader.upload(img)
+                        n_img = resultado["secure_url"]
+                    except Exception as e:
+                        print("Error subiendo imagen:", e)
 
-    con.close()
+            con.execute(f"""
+                UPDATE productos SET 
+                nombre={placeholder}, 
+                categoria={placeholder}, 
+                precio_compra={placeholder}, 
+                precio_venta={placeholder}, 
+                precio_mayorista={placeholder}, 
+                stock={placeholder}, 
+                imagen={placeholder} 
+                WHERE id={placeholder}
+            """, (nombre, categoria, p_compra, p_venta, p_mayorista, stock, n_img, id))
+
+            con.commit()
+            return redirect(url_for('index'))
+
     return render_template("editar.html", producto=p)
-
 @app.route("/eliminar/<int:id>")
 def eliminar(id):
     if not esta_logeado():
