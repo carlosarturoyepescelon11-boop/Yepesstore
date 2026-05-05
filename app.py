@@ -179,7 +179,7 @@ def editar(id):
 
             p_mayorista = p["precio_mayorista"]
 
-            # 🔥 IMAGEN CORREGIDA
+            # 🔥 IMAGEN CLOUDINARY
             n_img = p["imagen"]
 
             if 'imagen' in request.files:
@@ -189,8 +189,9 @@ def editar(id):
                     try:
                         resultado = cloudinary.uploader.upload(img)
                         n_img = resultado["secure_url"]
+                        print("IMAGEN NUEVA:", n_img)
                     except Exception as e:
-                        print("Error subiendo imagen:", e)
+                        print("ERROR CLOUDINARY:", e)
 
             con.execute(f"""
                 UPDATE productos SET 
@@ -208,6 +209,7 @@ def editar(id):
             return redirect(url_for('index'))
 
     return render_template("editar.html", producto=p)
+    
 @app.route("/eliminar/<int:id>")
 def eliminar(id):
     if not esta_logeado():
