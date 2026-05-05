@@ -13,58 +13,58 @@
 
 <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:20px;">
 
-```
 {% for p in productos %}
+
 <div style="background:#1e293b; border-radius:20px; overflow:hidden;">
 
-    <!-- IMAGEN -->
-    <div style="height:200px; background:#0f172a; display:flex; align-items:center; justify-content:center;">
-        {% if p["imagen"] %}
-            <img src="{{ p['imagen'] }}" style="width:100%; height:100%; object-fit:cover;">
-                 style="width:100%; height:100%; object-fit:cover;">
-        {% else %}
-            <div style="color:#64748b;">📸 Sin foto</div>
-        {% endif %}
-    </div>
+```
+<!-- IMAGEN -->
+<div style="height:200px; background:#0f172a; display:flex; align-items:center; justify-content:center;">
+    {% if p["imagen"] %}
+        <img src="{{ p['imagen'] }}" style="width:100%; height:100%; object-fit:cover;">
+    {% else %}
+        <div style="color:#64748b;">📸 Sin foto</div>
+    {% endif %}
+</div>
 
-    <!-- INFO -->
-    <div style="padding:15px; color:white;">
+<!-- INFO -->
+<div style="padding:15px; color:white;">
 
-        <h3>{{ p["nombre"] }}</h3>
+    <h3>{{ p["nombre"] }}</h3>
 
-        <p style="color:#22c55e; font-weight:bold;">
-            Venta: ${{ "{:,.0f}".format(p["precio_venta"]).replace(',', '.') }}
-        </p>
+    <p style="color:#22c55e; font-weight:bold;">
+        Venta: ${{ "{:,.0f}".format(p["precio_venta"]).replace(',', '.') }}
+    </p>
 
-        <p style="color:#94a3b8;">
-            Compra: ${{ "{:,.0f}".format(p["precio_compra"]).replace(',', '.') }}
-        </p>
+    <p style="color:#94a3b8;">
+        Compra: ${{ "{:,.0f}".format(p["precio_compra"]).replace(',', '.') }}
+    </p>
 
-        <p>
-            Stock:
-            <span style="color: {% if p['stock'] <= 3 %}red{% else %}white{% endif %};">
-                {{ p["stock"] }}
-            </span>
-        </p>
+    <p>
+        Stock:
+        <span style="color: {% if p['stock'] <= 3 %}red{% else %}white{% endif %};">
+            {{ p["stock"] }}
+        </span>
+    </p>
 
-    </div>
+</div>
 
-    <!-- BOTONES -->
-    <div style="display:flex; gap:10px; padding:10px;">
-        <a href="{{ url_for('editar', id=p['id']) }}"
-           style="flex:1; background:#3b82f6; color:white; text-align:center; padding:10px; border-radius:10px;">
-           ✏️ Editar
-        </a>
+<!-- BOTONES -->
+<div style="display:flex; gap:10px; padding:10px;">
+    <a href="{{ url_for('editar', id=p['id']) }}"
+       style="flex:1; background:#3b82f6; color:white; text-align:center; padding:10px; border-radius:10px;">
+       ✏️ Editar
+    </a>
 
-        <a href="{{ url_for('eliminar', id=p['id']) }}"
-           style="background:#ef4444; padding:10px; border-radius:10px;">
-           🗑️
-        </a>
-    </div>
+    <a href="{{ url_for('eliminar', id=p['id']) }}"
+       style="background:#ef4444; padding:10px; border-radius:10px;">
+       🗑️
+    </a>
+</div>
+```
 
 </div>
 {% endfor %}
-```
 
 </div>
 
