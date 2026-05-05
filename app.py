@@ -1,20 +1,22 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 import os
-import cloudinary
-import cloudinary.uploader
 import time
 from werkzeug.utils import secure_filename
 from datetime import datetime
-
-app = Flask(__name__)
-app.secret_key = "vapers_store_key_2024"
+import cloudinary
+import cloudinary.uploader
+from cloudinary import uploader
 
 cloudinary.config(
     cloud_name="TU_CLOUD_NAME",
     api_key="TU_API_KEY",
     api_secret="TU_API_SECRET"
 )
+app = Flask(__name__)
+app.secret_key = "vapers_store_key_2024"
+
+
 
 # --- CONFIGURACIÓN ---
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
