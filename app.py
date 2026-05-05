@@ -10,6 +10,12 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = "vapers_store_key_2024"
 
+cloudinary.config(
+    cloud_name="TU_CLOUD_NAME",
+    api_key="TU_API_KEY",
+    api_secret="TU_API_SECRET"
+)
+
 # --- CONFIGURACIÓN ---
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -137,7 +143,7 @@ def agregar():
             if 'imagen' in request.files:
                 img = request.files['imagen']
                 if img and img.filename != "":
-                    n_img = str(int(time.time())) + "_" + secure_filename(img.filename)
+                    if img and img.filename != "":
                     resultado = cloudinary.uploader.upload(img)
                     n_img = resultado["secure_url"]
 
