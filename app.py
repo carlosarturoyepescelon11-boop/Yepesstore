@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 import os
+import cloudinary
 import time
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -136,7 +137,8 @@ def agregar():
                 img = request.files['imagen']
                 if img and img.filename != "":
                     n_img = str(int(time.time())) + "_" + secure_filename(img.filename)
-                    img.save(os.path.join(app.config["UPLOAD_FOLDER"], n_img))
+                    resultado = cloudinary.uploader.upload(img)
+                    n_img = resultado["secure_url"]
 
             placeholder = get_placeholder()
             with conectar() as con:
@@ -180,8 +182,8 @@ def editar(id):
             img = request.files['imagen']
             if img and img.filename != "":
                 n_img = str(int(time.time())) + "_" + secure_filename(img.filename)
-                img.save(os.path.join(app.config["UPLOAD_FOLDER"], n_img))
-
+                resultado = cloudinary.uploader.upload(img)
+                n_img = resultado["secure_url"]
         con.execute(f"""
             UPDATE productos SET 
             nombre={placeholder}, 
