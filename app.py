@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import sqlite3
 import os
 import cloudinary
+import cloudinary.uploader
 import time
 from werkzeug.utils import secure_filename
 from datetime import datetime
