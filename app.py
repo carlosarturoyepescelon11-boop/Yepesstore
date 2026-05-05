@@ -133,6 +133,7 @@ def ventas():
 @app.route("/agregar", methods=["GET", "POST"])
 def agregar():
     if not esta_logeado(): return redirect(url_for('login'))
+
     if request.method == "POST":
         try:
             nombre = request.form.get("nombre")
@@ -141,31 +142,44 @@ def agregar():
             p_venta = float(request.form.get("precio_venta") or 0)
             p_mayorista = float(request.form.get("precio_mayorista") or 0)
             stock = int(request.form.get("stock") or 0)
-            n_img = ""
-if 'imagen' in request.files:
-    img = request.files['imagen']
 
-    if img and img.filename.strip() != "":
-        try:
-            resultado = cloudinary.uploader.upload(img)
-            n_img = resultado["secure_url"]
-            print("IMAGEN SUBIDA:", n_img)
-        except Exception as e:
-            print("ERROR CLOUDINARY:", e)
+            n_img = ""
+
+            # 🔥 IMAGEN CLOUDINARY (BIEN IDENTADO)
+            if 'imagen' in request.files:
+                img = request.files['imagen']
+
+                if img and img.filename.strip() != "":
+                    try:
+                        resultado = cloudinary.uploader.upload(img)
+                        n_img = resultado["secure_url"]
+                        print("IMAGEN SUBIDA:", n_img)
+                    except Exception as e:
+                        print("ERROR CLOUDINARY:", e)
 
             placeholder = get_placeholder()
+
             with conectar() as con:
-                con.execute(f"INSERT INTO productos (nombre, categoria, precio_compra, precio_venta, precio_mayorista, stock, imagen) VALUES ({placeholder},{placeholder},{placeholder},{placeholder},{placeholder},{placeholder},{placeholder})",
-                            (nombre, categoria, p_compra, p_venta, p_mayorista, stock, n_img))
+                con.execute(f"""
+                    INSERT INTO productos 
+                    (nombre, categoria, precio_compra, precio_venta, precio_mayorista, stock, imagen) 
+                    VALUES ({placeholder},{placeholder},{placeholder},{placeholder},{placeholder},{placeholder},{placeholder})
+                """, (nombre, categoria, p_compra, p_venta, p_mayorista, stock, n_img))
+
                 if stock > 0 and p_compra > 0:
-                    con.execute(f"INSERT INTO inversiones (monto, descripcion, fecha) VALUES ({placeholder},{placeholder},{placeholder})",
-                                (p_compra * stock, f"Compra inicial {nombre}", datetime.now().strftime("%Y-%m-%d")))
+                    con.execute(f"""
+                        INSERT INTO inversiones (monto, descripcion, fecha) 
+                        VALUES ({placeholder},{placeholder},{placeholder})
+                    """, (p_compra * stock, f"Compra inicial {nombre}", datetime.now().strftime("%Y-%m-%d")))
+
                 con.commit()
+
             return redirect(url_for('index'))
+
         except Exception as e:
             return f"Error al agregar: {e}"
-    return render_template("agregar.html")
 
+    return render_template("agregar.html")
 @app.route("/editar/<int:id>", methods=["GET", "POST"])
 def editar(id):
     if not esta_logeado():
