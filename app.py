@@ -142,7 +142,6 @@ def agregar():
             n_img = ""
             if 'imagen' in request.files:
                 img = request.files['imagen']
-                if img and img.filename != "":
                     if img and img.filename != "":
                     resultado = cloudinary.uploader.upload(img)
                     n_img = resultado["secure_url"]
