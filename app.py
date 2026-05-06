@@ -152,7 +152,7 @@ def agregar():
                 if img and img.filename.strip() != "":
                     try:
                         resultado = uploader.upload(img)
-                        n_img = resultado["secure_url"]
+                        print("URL CLOUDINARY:", n_img)
                         print("IMAGEN SUBIDA:", n_img)
                     except Exception as e:
                         print("ERROR CLOUDINARY:", e)
