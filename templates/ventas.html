@@ -69,51 +69,57 @@ body{
     margin-bottom:12px;
 }
 
-/* GRID */
+/* GRID PRO */
 .grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
-    gap:10px;
+    gap:12px;
 }
 
-/* CARD */
+/* CARD PRO */
 .card{
     background:#1e293b;
-    border-radius:14px;
+    border-radius:18px;
     overflow:hidden;
-    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+    box-shadow:0 6px 15px rgba(0,0,0,0.4);
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    transition:0.2s;
 }
 
-/* IMG PERFECTAMENTE CENTRADA */
+.card:hover{
+    transform:scale(1.02);
+}
+
+/* IMG */
 .img-box{
     width:100%;
     aspect-ratio:1/1;
     background:#0f172a;
-    display:flex;
-    align-items:center;
-    justify-content:center;
 }
 
 .img-box img{
-    width:95%;
-    height:95%;
-    object-fit:contain;
+    width:100%;
+    height:100%;
+    object-fit:cover;
 }
 
 /* INFO */
 .info{
-    padding:8px;
+    padding:10px;
     text-align:center;
     color:white;
 }
 
 .nombre{
-    font-size:0.9rem;
-    margin-bottom:4px;
+    font-size:0.85rem;
+    font-weight:600;
 }
 
 .precio{
     color:#22c55e;
+    font-size:1rem;
     font-weight:bold;
 }
 
@@ -121,12 +127,12 @@ body{
 .control{
     display:flex;
     justify-content:center;
-    gap:6px;
-    padding:6px;
+    gap:8px;
+    padding:8px;
 }
 
 .control button{
-    background:#0f172a;
+    background:#020617;
     color:white;
     border:none;
     padding:6px 10px;
@@ -134,7 +140,7 @@ body{
 }
 
 .control input{
-    width:40px;
+    width:45px;
     text-align:center;
     border-radius:6px;
     border:none;
@@ -142,19 +148,19 @@ body{
 
 /* BOTON */
 .btn{
-    width:85%;
-    margin:0 auto 8px;
+    width:90%;
+    margin:0 auto 10px;
     display:block;
     background:linear-gradient(135deg,#06b6d4,#22c55e);
     color:white;
     border:none;
-    padding:9px;
-    border-radius:10px;
+    padding:10px;
+    border-radius:12px;
     font-weight:bold;
 }
 </style>
 
-<!-- HEADER LIMPIO -->
+<!-- HEADER -->
 <div class="header">
     <div class="title">
         <span>🚀</span>
@@ -187,16 +193,13 @@ body{
 <div class="card" data-nombre="{{ p.nombre|lower }}">
 
     <div class="img-box">
-    {% if p["imagen"] and "http" in p["imagen"] %}
-        <img src="{{ p['imagen'] }}"
-             style="width:100%; height:100%; object-fit:cover;">
-    {% else %}
-        <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#64748b;">
-            📸 Sin imagen
-        </div>
-    {% endif %}
-
-</div>}
+        {% if p["imagen"] and "http" in p["imagen"] %}
+            <img src="{{ p['imagen'] }}">
+        {% else %}
+            <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#64748b;">
+                📸 Sin imagen
+            </div>
+        {% endif %}
     </div>
 
     <div class="info">
@@ -223,10 +226,11 @@ body{
 
 <script>
 function toggleMenu(event){
-    event.stopPropagation(); // 🔥 evita que se cierre al instante
+    event.stopPropagation();
     let m = document.getElementById("menu");
     m.style.display = m.style.display === "block" ? "none" : "block";
 }
+
 document.getElementById("buscador").addEventListener("keyup", function(){
     let filtro = this.value.toLowerCase();
     document.querySelectorAll(".card").forEach(p=>{
@@ -242,7 +246,8 @@ function cambiarCantidad(btn, cambio){
     if(valor<1) valor=1;
     input.value = valor;
 }
-    document.addEventListener("click", function(event) {
+
+document.addEventListener("click", function(event) {
     let menu = document.getElementById("menu");
     let button = document.querySelector(".btn-menu");
 
