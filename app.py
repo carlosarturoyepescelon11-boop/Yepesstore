@@ -150,13 +150,13 @@ def agregar():
             if 'imagen' in request.files:
                 img = request.files['imagen']
 
-                if img and img.filename.strip() != "":
-                    try:
-                        resultado = uploader.upload(img)
-                        print("URL CLOUDINARY:", n_img)
-                        print("IMAGEN SUBIDA:", n_img)
-                    except Exception as e:
-                        print("ERROR CLOUDINARY:", e)
+               if img and img.filename.strip() != "":
+                try:
+                resultado = uploader.upload(img)
+                n_img = resultado["secure_url"]   # 🔥 ESTA LÍNEA FALTABA
+                print("URL CLOUDINARY:", n_img)
+                except Exception as e:
+                print("ERROR CLOUDINARY:", e)
 
             placeholder = get_placeholder()
 
