@@ -143,20 +143,20 @@ def agregar():
             p_mayorista = float(request.form.get("precio_mayorista") or 0)
             stock = int(request.form.get("stock") or 0)
 
-            n_img = ""
+           n_img = ""
 
-            # 🔥 IMAGEN CLOUDINARY (BIEN IDENTADO)
-            print("FILES:", request.files)
-            if 'imagen' in request.files:
-                img = request.files['imagen']
+print("FILES:", request.files)
 
-               if img and img.filename.strip() != "":
-                try:
-                resultado = uploader.upload(img)
-                n_img = resultado["secure_url"]   # 🔥 ESTA LÍNEA FALTABA
-                print("URL CLOUDINARY:", n_img)
-                except Exception as e:
-                print("ERROR CLOUDINARY:", e)
+if 'imagen' in request.files:
+    img = request.files['imagen']
+
+    if img and img.filename.strip() != "":
+        try:
+            resultado = uploader.upload(img)
+            n_img = resultado["secure_url"]
+            print("URL CLOUDINARY:", n_img)
+        except Exception as e:
+            print("ERROR CLOUDINARY:", e)
 
             placeholder = get_placeholder()
 
