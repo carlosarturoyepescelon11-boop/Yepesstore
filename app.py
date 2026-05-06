@@ -146,6 +146,7 @@ def agregar():
             n_img = ""
 
             # 🔥 IMAGEN CLOUDINARY (BIEN IDENTADO)
+            print("FILES:", request.files)
             if 'imagen' in request.files:
                 img = request.files['imagen']
 
