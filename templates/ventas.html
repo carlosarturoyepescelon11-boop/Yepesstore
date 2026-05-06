@@ -187,6 +187,20 @@ body{
     from{opacity:0; transform:translateY(20px);}
     to{opacity:1; transform:translateY(0);}
 }
+    
+.menu a{
+    display:block;
+    color:white;
+    padding:10px;
+    text-decoration:none;
+    border-radius:8px;
+    transition:0.2s;
+}
+
+.menu a:hover{
+    background:#1e293b;
+}
+
 </style>
 
 <!-- HEADER -->
@@ -197,9 +211,15 @@ body{
     </div>
 
     <div class="actions">
-        <a href="{{ url_for('agregar') }}" class="btn-add">+ Agregar</a>
-        <button class="btn-menu" onclick="toggleMenu(event)" style="background:#111827;color:white;border:none;padding:8px;border-radius:8px;">☰</button>
-    </div>
+
+    <a href="{{ url_for('agregar') }}" class="btn-add">+ Agregar</a>
+
+    <a href="/caja" class="btn-mini">💰</a>
+    <a href="/inversion" class="btn-mini">📊</a>
+
+    <button class="btn-menu" onclick="toggleMenu(event)">☰</button>
+
+</div>
 
     <div id="menu" class="menu">
         <a href="/ventas">Inicio</a>
