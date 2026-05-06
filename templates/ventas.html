@@ -69,31 +69,34 @@ body{
     margin-bottom:12px;
 }
 
-/* GRID PRO */
+/* GRID */
 .grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
     gap:12px;
 }
 
-/* CARD PRO */
+/* CARD PRO+ */
 .card{
-    background:#1e293b;
+    animation:fadeUp 0.4s ease;
+    background:rgba(30,41,59,0.7);
+    backdrop-filter:blur(10px);
     border-radius:18px;
     overflow:hidden;
     box-shadow:0 6px 15px rgba(0,0,0,0.4);
     display:flex;
     flex-direction:column;
-    justify-content:space-between;
     transition:0.2s;
 }
 
 .card:hover{
-    transform:scale(1.02);
+    transform:scale(1.03);
+    box-shadow:0 10px 20px rgba(0,0,0,0.6);
 }
 
 /* IMG */
 .img-box{
+    position:relative;
     width:100%;
     aspect-ratio:1/1;
     background:#0f172a;
@@ -103,6 +106,19 @@ body{
     width:100%;
     height:100%;
     object-fit:cover;
+}
+
+/* BADGE */
+.badge-stock{
+    position:absolute;
+    top:8px;
+    left:8px;
+    background:#ef4444;
+    color:white;
+    font-size:12px;
+    padding:4px 6px;
+    border-radius:6px;
+    font-weight:bold;
 }
 
 /* INFO */
@@ -146,7 +162,7 @@ body{
     border:none;
 }
 
-/* BOTON */
+/* BOTÓN */
 .btn{
     width:90%;
     margin:0 auto 10px;
@@ -154,9 +170,22 @@ body{
     background:linear-gradient(135deg,#06b6d4,#22c55e);
     color:white;
     border:none;
-    padding:10px;
+    padding:11px;
     border-radius:12px;
     font-weight:bold;
+    font-size:14px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+    transition:0.2s;
+}
+
+.btn:active{
+    transform:scale(0.95);
+}
+
+/* ANIMACIÓN */
+@keyframes fadeUp{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
 }
 </style>
 
@@ -193,6 +222,11 @@ body{
 <div class="card" data-nombre="{{ p.nombre|lower }}">
 
     <div class="img-box">
+
+        {% if p.stock <= 3 %}
+        <div class="badge-stock">🔥 Poco</div>
+        {% endif %}
+
         {% if p["imagen"] and "http" in p["imagen"] %}
             <img src="{{ p['imagen'] }}">
         {% else %}
