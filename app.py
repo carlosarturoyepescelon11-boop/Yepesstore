@@ -9,9 +9,9 @@ import cloudinary.uploader
 from cloudinary import uploader
 
 cloudinary.config(
-    cloud_name="TU_CLOUD_NAME",
-    api_key="TU_API_KEY",
-    api_secret="TU_API_SECRET"
+    cloud_name="abc123",
+    api_key="123456789",
+    api_secret="xxxxxxxxxxxxx"
 )
 app = Flask(__name__)
 app.secret_key = "vapers_store_key_2024"
