@@ -8,6 +8,8 @@ import cloudinary
 import cloudinary.uploader
 from cloudinary import uploader
 import shutil
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
 
 cloudinary.config(
     cloud_name="dvfaytbyt",   # 👈 el que sale en tu cuenta
@@ -28,6 +30,10 @@ def hacer_backup():
         destino = f"backups/backup_{fecha}.db"
 
         shutil.copy(origen, destino)
+
+        # 🔥 AQUÍ VA LA MAGIA
+        subir_a_drive(destino)
+
         print("✅ BACKUP CREADO:", destino)
 
     except Exception as e:
@@ -110,8 +116,29 @@ init_db()
 
 hacer_backup()
 
+def subir_a_drive(ruta_archivo):
+    try:
+        gauth = GoogleAuth()
+        gauth.LoadServiceConfigSettings("credentials.json")
+
+        drive = GoogleDrive(gauth)
+
+        archivo = drive.CreateFile({
+            'title': os.path.basename(ruta_archivo)
+        })
+
+        archivo.SetContentFile(ruta_archivo)
+        archivo.Upload()
+
+        print("☁️ Backup subido a Drive")
+
+    except Exception as e:
+        print("❌ ERROR DRIVE:", e)
+
+
 def esta_logeado():
     return "usuario" in session
+
 
 # --- RUTAS DE ACCESO ---
 
