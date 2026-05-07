@@ -19,6 +19,25 @@ cloudinary.config(
 app = Flask(__name__)
 app.secret_key = "vapers_store_key_2024"
 
+def subir_a_drive(ruta_archivo):
+    try:
+        gauth = GoogleAuth()
+        gauth.LoadCredentialsFile("credentials.json")
+
+        drive = GoogleDrive(gauth)
+
+        archivo = drive.CreateFile({
+            'title': os.path.basename(ruta_archivo)
+        })
+
+        archivo.SetContentFile(ruta_archivo)
+        archivo.Upload()
+
+        print("☁️ Backup subido a Drive")
+
+    except Exception as e:
+        print("❌ ERROR DRIVE:", e)
+
 def hacer_backup():
     try:
         if not os.path.exists("backups"):
@@ -115,25 +134,6 @@ def init_db():
 init_db()
 
 hacer_backup()
-
-def subir_a_drive(ruta_archivo):
-    try:
-        gauth = GoogleAuth()
-        gauth.LoadServiceConfigSettings("credentials.json")
-
-        drive = GoogleDrive(gauth)
-
-        archivo = drive.CreateFile({
-            'title': os.path.basename(ruta_archivo)
-        })
-
-        archivo.SetContentFile(ruta_archivo)
-        archivo.Upload()
-
-        print("☁️ Backup subido a Drive")
-
-    except Exception as e:
-        print("❌ ERROR DRIVE:", e)
 
 
 def esta_logeado():
