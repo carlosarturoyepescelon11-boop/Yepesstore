@@ -7,6 +7,7 @@ from datetime import datetime
 import cloudinary
 import cloudinary.uploader
 from cloudinary import uploader
+import shutil
 
 cloudinary.config(
     cloud_name="dvfaytbyt",   # 👈 el que sale en tu cuenta
@@ -16,6 +17,21 @@ cloudinary.config(
 app = Flask(__name__)
 app.secret_key = "vapers_store_key_2024"
 
+def hacer_backup():
+    try:
+        if not os.path.exists("backups"):
+            os.makedirs("backups")
+
+        fecha = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        origen = "database.db"
+
+        destino = f"backups/backup_{fecha}.db"
+
+        shutil.copy(origen, destino)
+        print("✅ BACKUP CREADO:", destino)
+
+    except Exception as e:
+        print("❌ ERROR BACKUP:", e)
 
 
 # --- CONFIGURACIÓN ---
@@ -91,6 +107,8 @@ def init_db():
         con.commit()
 
 init_db()
+
+hacer_backup()
 
 def esta_logeado():
     return "usuario" in session
