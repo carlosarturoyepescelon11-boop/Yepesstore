@@ -44,12 +44,15 @@ cloudinary.config(
 app = Flask(__name__)
 app.secret_key = "vapers_store_key_2024"
 
-
-
-
 def subir_a_drive(ruta_archivo):
     try:
-                SCOPES = ['https://www.googleapis.com/auth/drive']
+        import json
+        import os
+        from google.oauth2 import service_account
+        from googleapiclient.discovery import build
+        from googleapiclient.http import MediaFileUpload
+
+        SCOPES = ['https://www.googleapis.com/auth/drive']
 
         credenciales_json = os.getenv("GOOGLE_CREDENTIALS")
 
