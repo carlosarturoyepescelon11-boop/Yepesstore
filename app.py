@@ -8,8 +8,7 @@ import cloudinary
 import cloudinary.uploader
 from cloudinary import uploader
 import shutil
-from pydrive2.auth import GoogleAuth
-from pydrive2.drive import GoogleDrive
+
 
 cloudinary.config(
     cloud_name="dvfaytbyt",   # 👈 el que sale en tu cuenta
@@ -21,17 +20,31 @@ app.secret_key = "vapers_store_key_2024"
 
 def subir_a_drive(ruta_archivo):
     try:
-        gauth = GoogleAuth()
-        gauth.LoadCredentialsFile("credentials.json")
+        from google.oauth2 import service_account
+        from googleapiclient.discovery import build
+        from googleapiclient.http import MediaFileUpload
+        import os
 
-        drive = GoogleDrive(gauth)
+        SCOPES = ['https://www.googleapis.com/auth/drive']
 
-        archivo = drive.CreateFile({
-            'title': os.path.basename(ruta_archivo)
-        })
+        creds = service_account.Credentials.from_service_account_file(
+            'credentials.json',
+            scopes=SCOPES
+        )
 
-        archivo.SetContentFile(ruta_archivo)
-        archivo.Upload()
+        service = build('drive', 'v3', credentials=creds)
+
+        file_metadata = {
+            'name': os.path.basename(ruta_archivo)
+        }
+
+        media = MediaFileUpload(ruta_archivo)
+
+        service.files().create(
+            body=file_metadata,
+            media_body=media,
+            fields='id'
+        ).execute()
 
         print("☁️ Backup subido a Drive")
 
