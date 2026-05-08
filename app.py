@@ -9,7 +9,6 @@ import cloudinary.uploader
 from cloudinary import uploader
 import shutil
 
-
 cloudinary.config(
     cloud_name="dvfaytbyt",   # 👈 el que sale en tu cuenta
     api_key="132665527395535",
