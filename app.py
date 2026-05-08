@@ -8,19 +8,29 @@ import cloudinary
 import cloudinary.uploader
 from cloudinary import uploader
 import shutil
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+
+
+from google.oauth2 import service_account
+
+try:
+    creds = service_account.Credentials.from_service_account_file("credentials.json")
+    print("✅ JSON válido")
+except Exception as e:
+    print("❌ JSON dañado:", e)
 
 cloudinary.config(
-    cloud_name="dvfaytbyt",   # 👈 el que sale en tu cuenta
+    cloud_name="dvfaytbyt",  # 👈 el que sale en tu cuenta
     api_key="132665527395535",
     api_secret="wexFoLPQmqgSYneCoMRlmA3PQPA"
 )
 app = Flask(__name__)
 app.secret_key = "vapers_store_key_2024"
 
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
-import os
+
+
 
 def subir_a_drive(ruta_archivo):
     try:
@@ -49,6 +59,8 @@ def subir_a_drive(ruta_archivo):
 
     except Exception as e:
         print("❌ ERROR DRIVE:", e)
+
+
 def hacer_backup():
     try:
         if not os.path.exists("backups"):
@@ -83,6 +95,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 USUARIO_ADMIN = "admin"
 CLAVE_ADMIN = "Yepes1504"
 
+
 def conectar():
     DATABASE_URL = os.getenv("DATABASE_URL")
 
@@ -90,15 +103,17 @@ def conectar():
         import psycopg
         from psycopg.rows import dict_row  # 🔥 IMPORTANTE
         conn = psycopg.connect(DATABASE_URL)
-        conn.row_factory = dict_row       # 🔥 ESTO ARREGLA TODO
+        conn.row_factory = dict_row  # 🔥 ESTO ARREGLA TODO
         return conn
     else:
         conn = sqlite3.connect("database.db")
         conn.row_factory = sqlite3.Row
         return conn
 
+
 def get_placeholder():
     return "%s" if os.getenv("DATABASE_URL") else "?"
+
 
 def init_db():
     with conectar() as con:
@@ -142,6 +157,7 @@ def init_db():
         )""")
         con.commit()
 
+
 init_db()
 
 hacer_backup()
@@ -164,10 +180,12 @@ def login():
         error = "Usuario o clave incorrectos"
     return render_template("login.html", error=error)
 
+
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
 
 # --- GESTIÓN DE PRODUCTOS ---
 
@@ -176,15 +194,19 @@ def index():
     if not esta_logeado(): return redirect(url_for('login'))
     with conectar() as con:
         # Aseguramos el orden exacto de columnas para el HTML
-        productos = con.execute("SELECT id, nombre, categoria, precio_compra, precio_venta, precio_mayorista, stock, imagen FROM productos ORDER BY id DESC").fetchall()
+        productos = con.execute(
+            "SELECT id, nombre, categoria, precio_compra, precio_venta, precio_mayorista, stock, imagen FROM productos ORDER BY id DESC").fetchall()
     return render_template("index.html", productos=productos)
+
 
 @app.route("/ventas")
 def ventas():
     if not esta_logeado(): return redirect(url_for('login'))
     with conectar() as con:
-        productos = con.execute("SELECT id, nombre, categoria, precio_compra, precio_venta, precio_mayorista, stock, imagen FROM productos ORDER BY id DESC").fetchall()
+        productos = con.execute(
+            "SELECT id, nombre, categoria, precio_compra, precio_venta, precio_mayorista, stock, imagen FROM productos ORDER BY id DESC").fetchall()
     return render_template("ventas.html", productos=productos)
+
 
 @app.route("/agregar", methods=["GET", "POST"])
 def agregar():
@@ -237,7 +259,8 @@ def agregar():
             return f"Error al agregar: {e}"
 
     return render_template("agregar.html")
-    
+
+
 @app.route("/editar/<int:id>", methods=["GET", "POST"])
 def editar(id):
     if not esta_logeado():
@@ -294,7 +317,8 @@ def editar(id):
             return redirect(url_for('index'))
 
     return render_template("editar.html", producto=p)
-    
+
+
 @app.route("/eliminar/<int:id>")
 def eliminar(id):
     if not esta_logeado():
@@ -307,7 +331,8 @@ def eliminar(id):
         con.commit()
 
     return redirect(url_for('index'))
-    
+
+
 # --- VENTAS Y TICKETS ---
 
 @app.route("/venta/<int:id>", methods=["POST"])
@@ -319,26 +344,32 @@ def venta(id):
     cantidad = int(request.form.get("cantidad") or 1)
 
     if p and p["stock"] >= cantidad:
-        precio_f = p["precio_mayorista"] if (p["categoria"] and p["categoria"].lower() == "vape" and cantidad >= 15 and p["precio_mayorista"] > 0) else p["precio_venta"]
+        precio_f = p["precio_mayorista"] if (
+                    p["categoria"] and p["categoria"].lower() == "vape" and cantidad >= 15 and p[
+                "precio_mayorista"] > 0) else p["precio_venta"]
         ganancia = (precio_f - p["precio_compra"]) * cantidad
         fecha = datetime.now().strftime("%Y-%m-%d")
 
         con.execute(f"UPDATE productos SET stock = stock - {placeholder} WHERE id={placeholder}", (cantidad, id))
-        con.execute(f"INSERT INTO ventas (producto_id, nombre, cantidad, precio_compra, precio_venta, ganancia, fecha) VALUES ({placeholder},{placeholder},{placeholder},{placeholder},{placeholder},{placeholder},{placeholder})",
-                    (id, p["nombre"], cantidad, p["precio_compra"], precio_f, ganancia, fecha))
+        con.execute(
+            f"INSERT INTO ventas (producto_id, nombre, cantidad, precio_compra, precio_venta, ganancia, fecha) VALUES ({placeholder},{placeholder},{placeholder},{placeholder},{placeholder},{placeholder},{placeholder})",
+            (id, p["nombre"], cantidad, p["precio_compra"], precio_f, ganancia, fecha))
         con.commit()
-        session["ticket"] = {"nombre": p["nombre"], "cantidad": cantidad, "total": precio_f * cantidad, "ganancia": ganancia}
+        session["ticket"] = {"nombre": p["nombre"], "cantidad": cantidad, "total": precio_f * cantidad,
+                             "ganancia": ganancia}
         flash(f"✅ Vendido: {p['nombre']}")
     else:
         flash("❌ Error en stock")
     con.close()
     return redirect(url_for('ticket'))
 
+
 @app.route("/ticket")
 def ticket():
     if not esta_logeado(): return redirect(url_for('login'))
     t = session.get("ticket")
     return render_template("ticket.html", t=t)
+
 
 # --- CAJA E INVERSIONES ---
 
@@ -379,6 +410,8 @@ def dashboard():
         ventas_hoy=ventas_hoy["total"] or 0,
         ventas=ventas_list
     )
+
+
 @app.route("/caja")
 def caja():
     if not esta_logeado():
@@ -417,6 +450,7 @@ def caja():
         ganancia=ganancia["total"] or 0
     )
 
+
 @app.route("/inversion", methods=["GET", "POST"])
 def inversion():
     if not esta_logeado(): return redirect(url_for('login'))
@@ -434,13 +468,16 @@ def inversion():
             desc = f"Resurtido {p['nombre']} x{cant}"
         else:
             desc = request.form.get("descripcion") or "Gasto general"
-        con.execute(f"INSERT INTO inversiones (monto, descripcion, fecha) VALUES ({placeholder}, {placeholder}, {placeholder})", (monto, desc, fecha))
+        con.execute(
+            f"INSERT INTO inversiones (monto, descripcion, fecha) VALUES ({placeholder}, {placeholder}, {placeholder})",
+            (monto, desc, fecha))
         con.commit()
         con.close()
         return redirect(url_for('dashboard'))
     productos = con.execute("SELECT id, nombre FROM productos").fetchall()
     con.close()
     return render_template("inversion.html", productos=productos)
+
 
 @app.route("/historial_caja")
 def historial_caja():
@@ -453,5 +490,7 @@ def historial_caja():
     """).fetchall()
     con.close()
     return render_template("historial_caja.html", historial=datos)
+
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
