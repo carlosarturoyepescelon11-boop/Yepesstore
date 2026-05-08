@@ -17,13 +17,13 @@ cloudinary.config(
 app = Flask(__name__)
 app.secret_key = "vapers_store_key_2024"
 
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+import os
+
 def subir_a_drive(ruta_archivo):
     try:
-        from google.oauth2 import service_account
-        from googleapiclient.discovery import build
-        from googleapiclient.http import MediaFileUpload
-        import os
-
         SCOPES = ['https://www.googleapis.com/auth/drive']
 
         creds = service_account.Credentials.from_service_account_file(
@@ -37,19 +37,18 @@ def subir_a_drive(ruta_archivo):
             'name': os.path.basename(ruta_archivo)
         }
 
-        media = MediaFileUpload(ruta_archivo)
+        media = MediaFileUpload(ruta_archivo, resumable=True)
 
-        service.files().create(
+        file = service.files().create(
             body=file_metadata,
             media_body=media,
             fields='id'
         ).execute()
 
-        print("☁️ Backup subido a Drive")
+        print("☁️ Backup subido a Drive ID:", file.get('id'))
 
     except Exception as e:
         print("❌ ERROR DRIVE:", e)
-
 def hacer_backup():
     try:
         if not os.path.exists("backups"):
