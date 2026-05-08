@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 import os
+import json
 import time
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -11,15 +12,29 @@ import shutil
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
-
-
 from google.oauth2 import service_account
 
+
+
 try:
-    creds = service_account.Credentials.from_service_account_file("credentials.json")
-    print("✅ JSON válido")
+    SCOPES = ['https://www.googleapis.com/auth/drive']
+
+    credenciales_json = os.getenv("GOOGLE_CREDENTIALS")
+
+    if not credenciales_json:
+        raise Exception("No existe GOOGLE_CREDENTIALS")
+
+    creds_dict = json.loads(credenciales_json)
+
+    creds = service_account.Credentials.from_service_account_info(
+        creds_dict,
+        scopes=SCOPES
+    )
+
+    print("✅ Credenciales cargadas correctamente")
+
 except Exception as e:
-    print("❌ JSON dañado:", e)
+    print("❌ ERROR CREDENCIALES:", e)
 
 cloudinary.config(
     cloud_name="dvfaytbyt",  # 👈 el que sale en tu cuenta
@@ -34,10 +49,17 @@ app.secret_key = "vapers_store_key_2024"
 
 def subir_a_drive(ruta_archivo):
     try:
-        SCOPES = ['https://www.googleapis.com/auth/drive']
+                SCOPES = ['https://www.googleapis.com/auth/drive']
 
-        creds = service_account.Credentials.from_service_account_file(
-            'credentials.json',
+        credenciales_json = os.getenv("GOOGLE_CREDENTIALS")
+
+        if not credenciales_json:
+            raise Exception("No existe GOOGLE_CREDENTIALS")
+
+        creds_dict = json.loads(credenciales_json)
+
+        creds = service_account.Credentials.from_service_account_info(
+            creds_dict,
             scopes=SCOPES
         )
 
