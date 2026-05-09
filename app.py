@@ -85,7 +85,6 @@ def subir_a_drive(ruta_archivo):
     except Exception as e:
         print("❌ ERROR DRIVE:", e)
 
-
 def hacer_backup():
     try:
         if not os.path.exists("backups"):
