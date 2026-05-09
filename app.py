@@ -67,8 +67,12 @@ def subir_a_drive(ruta_archivo):
 
         service = build('drive', 'v3', credentials=creds)
 
+        # 🔥 ID DE TU CARPETA
+        FOLDER_ID = "1sw21uicMMFJxrjGvYXPO9hVgWXKI4qW0"
+
         file_metadata = {
-            'name': os.path.basename(ruta_archivo)
+            'name': os.path.basename(ruta_archivo),
+            'parents': [FOLDER_ID]
         }
 
         media = MediaFileUpload(ruta_archivo, resumable=True)
@@ -83,7 +87,7 @@ def subir_a_drive(ruta_archivo):
 
     except Exception as e:
         print("❌ ERROR DRIVE:", e)
-
+        
 def hacer_backup():
     try:
         if not os.path.exists("backups"):
