@@ -15,7 +15,6 @@ from googleapiclient.http import MediaFileUpload
 from google.oauth2 import service_account
 
 
-
 try:
     SCOPES = ['https://www.googleapis.com/auth/drive']
 
