@@ -1,93 +1,36 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 import os
-import json
-import time
-from werkzeug.utils import secure_filename
 from datetime import datetime
 import cloudinary
 import cloudinary.uploader
 from cloudinary import uploader
 import shutil
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
-from google.oauth2 import service_account
 
 
-try:
-    SCOPES = ['https://www.googleapis.com/auth/drive']
-
-    credenciales_json = os.getenv("GOOGLE_CREDENTIALS")
-
-    if not credenciales_json:
-        raise Exception("No existe GOOGLE_CREDENTIALS")
-
-    creds_dict = json.loads(credenciales_json)
-
-    creds = service_account.Credentials.from_service_account_info(
-        creds_dict,
-        scopes=SCOPES
-    )
-
-    print("✅ Credenciales cargadas correctamente")
-
-except Exception as e:
-    print("❌ ERROR CREDENCIALES:", e)
 
 cloudinary.config(
-    cloud_name="dvfaytbyt",  # 👈 el que sale en tu cuenta
-    api_key="132665527395535",
-    api_secret="wexFoLPQmqgSYneCoMRlmA3PQPA"
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET")
 )
-app = Flask(__name__)
-app.secret_key = "vapers_store_key_2024"
 
-def subir_a_drive(ruta_archivo):
+def subir_a_cloudinary(ruta_archivo):
     try:
-        import json
-        import os
-        from google.oauth2 import service_account
-        from googleapiclient.discovery import build
-        from googleapiclient.http import MediaFileUpload
-
-        SCOPES = ['https://www.googleapis.com/auth/drive']
-
-        credenciales_json = os.getenv("GOOGLE_CREDENTIALS")
-
-        if not credenciales_json:
-            raise Exception("No existe GOOGLE_CREDENTIALS")
-
-        creds_dict = json.loads(credenciales_json)
-
-        creds = service_account.Credentials.from_service_account_info(
-            creds_dict,
-            scopes=SCOPES
+        respuesta = cloudinary.uploader.upload(
+            ruta_archivo,
+            resource_type="raw",
+            folder="backups"
         )
 
-        service = build('drive', 'v3', credentials=creds)
-
-        # 🔥 ID DE TU CARPETA
-        FOLDER_ID = "1sw21uicMMFJxrjGvYXPO9hVgWXKI4qW0"
-
-        file_metadata = {
-            'name': os.path.basename(ruta_archivo),
-            'parents': [FOLDER_ID]
-        }
-
-        media = MediaFileUpload(ruta_archivo, resumable=True)
-
-        file = service.files().create(
-            body=file_metadata,
-            media_body=media,
-            fields='id'
-        ).execute()
-
-        print("☁️ Backup subido a Drive ID:", file.get('id'))
+        print("☁️ Backup Cloudinary:", respuesta["secure_url"])
 
     except Exception as e:
-        print("❌ ERROR DRIVE:", e)
-        
+        print("❌ ERROR CLOUDINARY:", str(e))
+
+app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY")
+
 def hacer_backup():
     try:
         if not os.path.exists("backups"):
@@ -101,13 +44,12 @@ def hacer_backup():
         shutil.copy(origen, destino)
 
         # 🔥 AQUÍ VA LA MAGIA
-        subir_a_drive(destino)
+        subir_a_cloudinary(destino)
 
         print("✅ BACKUP CREADO:", destino)
-
+        
     except Exception as e:
-        print("❌ ERROR BACKUP:", e)
-
+        print("❌ ERROR BACKUP:", str(e))
 
 # --- CONFIGURACIÓN ---
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -119,9 +61,8 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER  # 🔥 primero se define
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)  # 🔥 luego se usa
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-USUARIO_ADMIN = "admin"
-CLAVE_ADMIN = "Yepes1504"
-
+USUARIO_ADMIN = os.getenv("ADMIN_USER")
+CLAVE_ADMIN = os.getenv("ADMIN_PASSWORD")
 
 def conectar():
     DATABASE_URL = os.getenv("DATABASE_URL")
@@ -187,7 +128,7 @@ def init_db():
 
 init_db()
 
-hacer_backup()
+
 
 
 def esta_logeado():
@@ -283,7 +224,9 @@ def agregar():
             return redirect(url_for('index'))
 
         except Exception as e:
-            return f"Error al agregar: {e}"
+            print("ERROR AGREGAR:", e)
+            flash("❌ Ocurrió un error")
+            return redirect(url_for('agregar'))
 
     return render_template("agregar.html")
 
