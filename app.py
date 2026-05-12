@@ -199,7 +199,7 @@ def agregar():
 
                 if img and img.filename.strip() != "":
                     try:
-                        resultado = uploader.upload(img)
+                        resultado = cloudinary.uploader.upload(img)
                         n_img = resultado["secure_url"]
                         print("URL CLOUDINARY:", n_img)
                     except Exception as e:
