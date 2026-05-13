@@ -4,7 +4,6 @@ import os
 from datetime import datetime
 import cloudinary
 import cloudinary.uploader
-from cloudinary import uploader
 import shutil
 
 print("CLOUD NAME:", os.getenv("CLOUDINARY_CLOUD_NAME"))
