@@ -201,7 +201,7 @@ def agregar():
 
                 if img and img.filename.strip() != "":
                     try:
-                        resultado = cloudinary.uploader.upload(img)
+                        resultado = cloudinary.uploader.upload(img.stream)
                         n_img = resultado["secure_url"]
                         print("URL CLOUDINARY:", n_img)
                     except Exception as e:
@@ -267,7 +267,7 @@ def editar(id):
 
                 if img and img.filename.strip() != "":
                     try:
-                        resultado = cloudinary.uploader.upload(img)
+                        resultado = cloudinary.uploader.upload(img.stream)
                         n_img = resultado["secure_url"]
                         print("IMAGEN NUEVA:", n_img)
                     except Exception as e:
