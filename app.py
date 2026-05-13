@@ -6,9 +6,6 @@ import cloudinary
 import cloudinary.uploader
 import shutil
 
-print("CLOUD NAME:", os.getenv("CLOUDINARY_CLOUD_NAME"))
-print("API KEY:", os.getenv("CLOUDINARY_API_KEY"))
-print("API SECRET:", os.getenv("CLOUDINARY_API_SECRET"))
 
 def subir_a_cloudinary(ruta_archivo):
     try:
